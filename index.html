@@ -598,7 +598,7 @@ function updCredits(){
 /* ==================== LOCAL SAVE (IndexedDB) ==================== */
 function idbOpen(){
   return new Promise((res,rej)=>{
-    const r=indexedDB.open("little-explorer",1);
+    const r=indexedDB.open("school-adventures",1);
     r.onupgradeneeded=()=>r.result.createObjectStore("books");
     r.onsuccess=()=>res(r.result);
     r.onerror=()=>rej(r.error);
@@ -657,6 +657,7 @@ window.checkCode = async function(){
     else{
       S.code=code; S.credits=data.credits; updCredits();
       try{ S.saved=await idbGet(code)||null; }catch(e){ S.saved=null; }
+      if(S.saved && !THEMES[S.saved.theme]) S.saved=null;
       renderThemePicker();
       show("s-theme");
     }
