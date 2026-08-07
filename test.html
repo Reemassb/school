@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My School Adventures — Personalized Storybooks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800&family=Baloo+Bhaijaan+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --paper:#FFF8EC; --card:#fff; --ink:#3B2A4A; --ink-soft:#6D5C80;
+  --coral:#FF7A59; --coral-deep:#E85D3A; --sunny:#FFC948; --teal:#35A7A0;
+  --sand:#F5DEB0; --night:#2A2350;
+  --radius:22px; --shadow:0 10px 30px rgba(59,42,74,.12);
+  --font-display:'Fredoka',sans-serif; --font-body:'Nunito',sans-serif;
+}
+html[dir=rtl]{
+  --font-display:'Baloo Bhaijaan 2',sans-serif;
+  --font-body:'Baloo Bhaijaan 2',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);background:var(--paper);color:var(--ink);min-height:100vh;
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(255,201,72,.14) 0 90px, transparent 90px),
+    radial-gradient(circle at 92% 20%, rgba(53,167,160,.10) 0 120px, transparent 120px),
+    radial-gradient(circle at 85% 85%, rgba(255,122,89,.10) 0 100px, transparent 100px);
+}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 80px}
+.iab{display:none;background:#B3261E;color:#fff;font-weight:800;font-size:.92rem;
+  padding:12px 16px;text-align:center;line-height:1.5}
+.iab.on{display:block}
+
+.screen{display:none}
+.screen.on{display:block;animation:fadein .4s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.on,.page.on{animation:none}}
+
+header{text-align:center;margin-bottom:24px}
+.kicker{display:inline-block;font-family:var(--font-display);font-weight:600;font-size:.8rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--teal);
+  border:2px solid var(--teal);border-radius:999px;padding:5px 14px;margin-bottom:12px;background:#fff}
+html[dir=rtl] .kicker{letter-spacing:0}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.15}
+h1 .pop{color:var(--coral)}
+header p{color:var(--ink-soft);margin-top:8px;font-weight:600}
+
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:26px;border:2px solid rgba(59,42,74,.06);margin-bottom:18px}
+h2{font-family:var(--font-display);font-weight:600;font-size:1.25rem;margin-bottom:6px}
+.sub{color:var(--ink-soft);font-weight:600;font-size:.92rem;margin-bottom:16px}
+
+label.field{display:block;font-weight:800;font-size:.9rem;margin-bottom:6px}
+input[type=text]{width:100%;padding:13px 16px;font:inherit;font-weight:700;font-size:1.05rem;
+  border:2px solid rgba(59,42,74,.18);border-radius:14px;background:var(--paper);color:var(--ink)}
+input[type=text]:focus{outline:3px solid var(--sunny);border-color:var(--ink)}
+
+.btn{font-family:var(--font-display);font-weight:600;font-size:1.05rem;border:none;cursor:pointer;
+  padding:14px 30px;border-radius:999px;color:#fff;background:var(--coral);
+  box-shadow:0 5px 0 var(--coral-deep);transition:transform .12s, box-shadow .12s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--coral-deep)}
+.btn:focus-visible{outline:3px solid var(--sunny)}
+.btn.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 rgba(59,42,74,.15);border:2px solid rgba(59,42,74,.15)}
+.btn.small{font-size:.9rem;padding:9px 18px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.center{text-align:center}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* language picker */
+.langpick{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.langpick button{
+  font-family:'Baloo Bhaijaan 2','Fredoka',sans-serif;font-size:1.5rem;font-weight:700;
+  padding:26px 44px;border-radius:22px;border:3px solid rgba(59,42,74,.12);background:#fff;
+  color:var(--ink);cursor:pointer;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.langpick button:hover{transform:translateY(-4px);border-color:var(--coral)}
+.langpick small{display:block;font-size:.85rem;color:var(--ink-soft);font-weight:600;margin-top:4px}
+
+/* theme picker */
+.themepick{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-top:8px}
+.themepick button{
+  font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--ink);cursor:pointer;
+  padding:26px 16px;border-radius:22px;border:3px solid rgba(59,42,74,.12);background:#fff;
+  box-shadow:var(--shadow);transition:transform .15s,border-color .15s;text-align:center}
+.themepick button:hover{transform:translateY(-4px);border-color:var(--coral)}
+.themepick .ticon{font-size:2.6rem;display:block;margin-bottom:8px}
+.themepick small{display:block;font-family:var(--font-body);font-weight:600;font-size:.85rem;color:var(--ink-soft);margin-top:6px}
+
+/* gender pick */
+.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pills button{font:inherit;font-weight:800;font-size:1rem;padding:11px 22px;border-radius:999px;
+  border:2px solid rgba(59,42,74,.18);background:#fff;color:var(--ink-soft);cursor:pointer}
+.pills button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* upload */
+.upload-zone{border:3px dashed rgba(59,42,74,.25);border-radius:18px;padding:24px;text-align:center;
+  cursor:pointer;transition:.2s;background:var(--paper)}
+.upload-zone:hover{border-color:var(--coral);background:#FFF3E8}
+.upload-zone .emoji{font-size:2rem;display:block;margin-bottom:6px}
+.upload-zone strong{font-family:var(--font-display);font-weight:600;display:block;margin-bottom:4px}
+.upload-zone span{color:var(--ink-soft);font-weight:600;font-size:.9rem}
+#fileInput{display:none}
+.thumb{display:none;margin:14px auto 0;width:130px;height:130px;border-radius:20px;object-fit:cover;
+  box-shadow:var(--shadow);border:3px solid #fff}
+.privacy{margin-top:12px;font-size:.82rem;color:var(--ink-soft);font-weight:600;text-align:center}
+.phototips{margin-top:10px;font-size:.85rem;font-weight:700;color:var(--teal);text-align:center}
+
+.notice{padding:13px 16px;border-radius:14px;font-weight:700;font-size:.92rem;margin-top:14px;display:none}
+.notice.err{display:block;background:#FDEAEA;color:#B3261E}
+.notice.ok{display:block;background:#E6F6EC;color:#1F7A3D}
+.credits{font-size:.85rem;font-weight:800;color:var(--teal);text-align:center;margin-top:10px}
+
+/* character approval */
+.charbox{display:flex;flex-direction:column;align-items:center;gap:16px}
+.charbox img{width:min(340px,84vw);border-radius:22px;box-shadow:var(--shadow)}
+
+/* progress */
+.progress-wrap{margin-top:8px}
+.bigbar{height:18px;border-radius:999px;background:#EFE6D4;overflow:hidden;box-shadow:inset 0 2px 4px rgba(59,42,74,.08)}
+.bigbar div{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--sunny),var(--coral));transition:width .6s ease}
+.progmsg{text-align:center;font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin-top:16px;min-height:1.5em}
+.progsub{text-align:center;color:var(--ink-soft);font-weight:700;font-size:.85rem;margin-top:6px}
+.thumbrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.thumbrow .t{width:56px;height:56px;border-radius:12px;background:#EFE6D4;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;overflow:hidden;box-shadow:var(--shadow)}
+.thumbrow .t img{width:100%;height:100%;object-fit:cover}
+
+/* book */
+.book{position:relative;max-width:560px;margin:0 auto;border-radius:26px;overflow:hidden;
+  box-shadow:0 20px 50px rgba(42,35,80,.28);background:var(--night)}
+.page{display:none}
+.page.on{display:block;animation:pagein .5s ease}
+@keyframes pagein{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.page img.illu{width:100%;display:block;aspect-ratio:1;object-fit:cover;background:#EFE6D4}
+.caption{background:#FFFDF6;padding:20px 26px 22px;text-align:center;position:relative}
+.caption::before{content:'';position:absolute;top:0;left:8%;right:8%;height:3px;border-radius:3px;background:var(--sunny)}
+.caption .booktitle{font-family:var(--font-display);font-weight:700;font-size:1.5rem;line-height:1.25;margin-bottom:4px}
+.caption p{font-size:1.1rem;font-weight:700;line-height:1.6}
+.caption .kidname{color:var(--coral);font-family:var(--font-display);font-weight:700}
+.pageno{font-size:.75rem;letter-spacing:.1em;color:var(--ink-soft);font-weight:800;margin-top:10px;text-transform:uppercase}
+html[dir=rtl] .pageno{letter-spacing:0}
+.booknav{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+.pagefix{text-align:center;margin-top:10px}
+.urow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:520px){.urow{grid-template-columns:1fr}}
+select{width:100%;padding:14px 12px;border-radius:14px;border:2px solid #E8DCC8;
+  background:#fff;font-family:inherit;font-weight:700;font-size:1rem;color:#3B2A4A}
+</style>
+</head>
+<body>
+<div class="iab" id="iabWarn">
+  <span class="ien">⚠️ You're inside an app's built-in browser — PDF downloads won't work here.
+  Tap the ⋯ menu and choose "Open in Safari" / "Open in Chrome".</span>
+  <span class="iar" style="display:none">⚠️ أنت داخل متصفح مدمج في تطبيق — تحميل ملف PDF لن يعمل هنا.
+  اضغط قائمة ⋯ واختر "الفتح في Safari" أو "الفتح في Chrome".</span>
+</div>
+<div class="wrap">
+
+<!-- ============ SCREEN 0: LANGUAGE ============ -->
+<section class="screen on" id="s-lang">
+  <header>
+    <div class="kicker">My School Adventures 🎒✏️🐱 مغامرات مدرستي</div>
+    <h1>Choose your language<br>اختر لغة القصة</h1>
+  </header>
+  <div class="langpick">
+    <button onclick="setLang('ar')">العربية<small>قصة بالعربية</small></button>
+    <button onclick="setLang('en')">English<small>Story in English</small></button>
+  </div>
+</section>
+
+<!-- ============ SCREEN 1: ACCESS CODE ============ -->
+<section class="screen" id="s-code">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="codeTitle"></h1>
+    <p data-t="codeSub"></p>
+  </header>
+  <div class="card">
+    <label class="field" for="codeInput" data-t="codeLabel"></label>
+    <input type="text" id="codeInput" autocomplete="off" placeholder="XXXX-XXXX-XXXX" style="text-transform:uppercase">
+    <div class="notice" id="codeNotice"></div>
+    <div class="center" style="margin-top:18px">
+      <button class="btn" id="codeBtn" onclick="checkCode()" data-t="codeBtn"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 2: THEME PICKER ============ -->
+<section class="screen" id="s-theme">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="themeTitle"></h1>
+    <p data-t="themeSub"></p>
+  </header>
+  <div class="themepick" id="themePick"></div>
+</section>
+
+<!-- ============ SCREEN 3: CHILD SETUP ============ -->
+<section class="screen" id="s-setup">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="setupTitle"></h1>
+    <p data-t="setupSub"></p>
+  </header>
+  <div class="card">
+    <label class="field" for="kidName" data-t="nameLabel"></label>
+    <input type="text" id="kidName" maxlength="20" autocomplete="off">
+    <div style="height:16px"></div>
+    <label class="field" data-t="genderLabel"></label>
+    <div class="pills" id="genderPills">
+      <button data-g="boy" data-t="boy"></button>
+      <button data-g="girl" data-t="girl"></button>
+    </div>
+    <div style="height:16px"></div>
+    <label class="field" data-t="photoLabel"></label>
+    <div class="upload-zone" id="dropZone">
+      <span class="emoji">📷</span>
+      <strong data-t="photoTitle"></strong>
+      <span data-t="photoHint"></span>
+    </div>
+    <input type="file" id="fileInput" accept="image/*">
+    <img class="thumb" id="thumb" alt="">
+    <div style="height:16px"></div>
+    <label class="field" for="schoolName" data-t="schoolLabel"></label>
+    <input type="text" id="schoolName" maxlength="40" autocomplete="off">
+    <div style="height:16px"></div>
+    <label class="field" for="schoolInit" data-t="initLabel"></label>
+    <input type="text" id="schoolInit" maxlength="3" autocomplete="off" style="text-transform:uppercase">
+    <div style="height:16px"></div>
+    <label class="field" data-t="uniformLabel"></label>
+    <div class="urow">
+      <select id="shirtSel"></select>
+      <select id="garmentSel"></select>
+      <select id="bottomSel"></select>
+    </div>
+    <div style="height:16px"></div>
+    <label class="field" for="talentSel" data-t="talentLabel"></label>
+    <select id="talentSel"></select>
+    <p class="phototips" data-t="photoTips"></p>
+    <p class="privacy" data-t="privacy"></p>
+    <div class="notice" id="setupNotice"></div>
+    <div class="center" style="margin-top:18px">
+      <button class="btn" id="setupBtn" onclick="startCharacter()" disabled data-t="setupBtn"></button>
+    </div>
+    <p class="credits" id="creditsLine1"></p>
+  </div>
+</section>
+
+<!-- ============ SCREEN 4: CHARACTER APPROVAL ============ -->
+<section class="screen" id="s-char">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="charTitle"></h1>
+    <p data-t="charSub"></p>
+  </header>
+  <div class="card charbox">
+    <div class="progress-wrap" id="charProgress" style="width:100%">
+      <div class="bigbar"><div id="charBar"></div></div>
+      <div class="progmsg" id="charMsg"></div>
+    </div>
+    <img id="charImg" style="display:none" alt="Cartoon character">
+    <div class="row" id="charActions" style="display:none">
+      <button class="btn" onclick="approveCharacter()" data-t="charApprove"></button>
+      <button class="btn ghost" onclick="regenCharacter()" data-t="charRetry"></button>
+    </div>
+    <div class="notice" id="charNotice"></div>
+    <p class="credits" id="creditsLine2"></p>
+  </div>
+</section>
+
+<!-- ============ SCREEN 5: GENERATING PAGES ============ -->
+<section class="screen" id="s-gen">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="genTitle"></h1>
+    <p data-t="genSub"></p>
+  </header>
+  <div class="card">
+    <div class="progress-wrap">
+      <div class="bigbar"><div id="genBar"></div></div>
+      <div class="progmsg" id="genMsg"></div>
+      <div class="progsub" id="genSubMsg"></div>
+      <div class="thumbrow" id="thumbRow"></div>
+    </div>
+    <div class="notice" id="genNotice"></div>
+    <div class="center" id="genRetryWrap" style="display:none;margin-top:16px">
+      <button class="btn" onclick="resumeGeneration()" data-t="genRetry"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 6: THE BOOK ============ -->
+<section class="screen" id="s-book">
+  <header>
+    <div class="kicker" data-t="kicker"></div>
+    <h1 data-t="bookTitle"></h1>
+    <p data-t="bookSub"></p>
+  </header>
+  <div class="book" id="book"></div>
+  <div class="booknav">
+    <button class="btn ghost" id="prevBtn" data-t="back"></button>
+    <button class="btn" id="nextBtn" data-t="next"></button>
+  </div>
+  <div class="pagefix">
+    <button class="btn ghost small" id="regenPageBtn" onclick="regenCurrentPage()" data-t="regenPage"></button>
+  </div>
+  <div class="center" style="margin-top:22px">
+    <button class="btn" id="pdfBtn" onclick="downloadPDF()" data-t="pdf"></button>
+  </div>
+  <div class="notice" id="bookNotice"></div>
+  <p class="credits" id="creditsLine3"></p>
+</section>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ==================== CONFIG ==================== */
+const WORKER_URL = "https://storybook.reemafahmi.workers.dev";
+
+const CHAR_BASE = "This is a photo of a real child (a young {GENDER}). Create the SAME child as a cartoon character in soft 3D animated movie style. It is very important that the character is instantly recognizable as this exact child: keep the same face shape, eye shape and eye color, eyebrows, nose, mouth and smile, skin tone, and the exact same hairstyle and hair color. Apply only gentle stylization (soft smooth skin, slightly larger eyes, clean cartoon shading) and do not change the child's identity or facial features. {OUTFIT} Full body, standing, friendly smile, plain warm cream background. No text.";
+
+const SUFFIX_BASE = " Children's picture book illustration, soft 3D animated movie style, {PALETTE}, gentle lighting, wide composition. The attached image is the character reference: draw the exact same child with identical facial features, eyes, nose, mouth, skin tone, hairstyle, hair color and outfit — the face must stay clearly visible and recognizable in the scene. No text or letters in the image.";
+
+/* ==================== UNIFORM COLOURS ==================== */
+/* m = masculine Arabic form (قميص, بنطال)  |  f = feminine (تنّورة) */
+const UCOL = {
+  white:  {en:"white",         m:"أبيض",        f:"بيضاء",        hex:"#EFEFEF", dark:true },
+  navy:   {en:"navy blue",     m:"أزرق غامق",   f:"زرقاء غامقة",  hex:"#1F3A6E", dark:false},
+  sky:    {en:"sky blue",      m:"أزرق فاتح",   f:"زرقاء فاتحة",  hex:"#5B9BD5", dark:false},
+  maroon: {en:"deep maroon",   m:"عنّابي",       f:"عنّابية",       hex:"#7B2233", dark:false},
+  green:  {en:"forest green",  m:"أخضر",        f:"خضراء",        hex:"#2E6B45", dark:false},
+  grey:   {en:"charcoal grey", m:"رمادي",       f:"رمادية",       hex:"#4A4A55", dark:false}
+};
+const UCOL_LABEL = {
+  en:{white:"White",navy:"Navy",sky:"Sky blue",maroon:"Maroon",green:"Green",grey:"Grey"},
+  ar:{white:"أبيض",navy:"أزرق غامق",sky:"أزرق فاتح",maroon:"عنّابي",green:"أخضر",grey:"رمادي"}
+};
+const GARMENT_LABEL = {
+  en:{trousers:"Trousers",skirt:"Skirt"},
+  ar:{trousers:"بنطال",skirt:"تنّورة"}
+};
+
+/* Everything the story text needs about the uniform + school, in one object. */
+function uni(){
+  const sh = UCOL[S.shirt] || UCOL.white;
+  const bo = UCOL[S.bottom] || UCOL.navy;
+  const skirt = S.garment === "skirt";
+  return {
+    school:   S.school || "",
+    shirtEn:  sh.en,
+    bottomEn: bo.en,
+    garEn:    skirt ? "skirt" : "trousers",
+    shirtAr:  sh.m,
+    bottomAr: skirt ? bo.f : bo.m,
+    garAr:    skirt ? "تنّورة" : "بنطال",
+    initials: (S.initials||"").trim()
+  };
+}
+
+/* ==================== THEMES ==================== */
+const THEMES = {
+
+/* ---------------- FIRST DAY 🎒 ---------------- */
+firstday: {
+  icon:"🎒",
+  name:{en:"My First Day", ar:"أوّل يوم في المدرسة"},
+  tag:{en:"A new school, a new friend & a cat named Mishmish",
+       ar:"مدرسة جديدة وصديق جديد وقطّ اسمه مشمش"},
+  outfit:(u)=>`Dress the character in a school uniform: a ${u.shirtEn} short-sleeved collared shirt with a ${u.bottomEn} shield-shaped school crest on the left chest${u.initials?`, and inside that crest the letters "${u.initials}" printed clearly in white block capitals, correctly spelled and level`:""}, ${u.bottomEn} ${u.garEn}, white socks and black shoes. The hair and full face must stay clearly visible.`,
+  palette:"warm palette built on deep royal blue and warm gold, with cream stone tones and bright Gulf daylight",
+  fun:{
+    en:["Ironing the new uniform… 👕","Waking Mishmish from his nap… 🐱","Writing name cards for the desks… ✏️","Filling the playground with sunshine… ☀️","Sharpening a hundred pencils… ✏️","Saving a seat in the circle… 🪑"],
+    ar:["نكوي الزيّ المدرسي الجديد… 👕","نوقظ مشمش من قيلولته… 🐱","نكتب الأسماء على الطاولات… ✏️","نملأ الساحة بأشعة الشمس… ☀️","نبري مئة قلم رصاص… ✏️","نحجز مقعداً في الحلقة… 🪑"]
+  },
+  story:[
+
+  /* 0 — cover */
+  { prompt:"The character stands at the open gate of a school in bright morning light, schoolbag on both shoulders, smiling proudly at the viewer, behind is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight, other children arriving in the distance.",
+    en:(n,u)=>({title:`${n}'s First Day at School`, text:`Today is ${n}'s very first day at ${u.school}.`}),
+    ar:(n,g,u)=>({title:`أوّل يوم في المدرسة — ${n}`, text:`اليوم هو أوّل يوم لـ${n} في ${u.school}.`}) },
+
+  /* 1 — the gate */
+  { prompt:"The character stands just outside a tall blue and gold school gate holding the schoolbag strap tightly with both hands, looking up, a little nervous but determined, warm morning sunlight; behind the gate is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight; other children walk past in the background.",
+    en:(n,u)=>({text:`${n} put on the new uniform — a ${u.shirtEn} shirt and ${u.bottomEn} ${u.garEn} — and stood at the gates of ${u.school}, holding the bag strap tight. ${n}'s heart was beating fast.`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`لبسَ ${n} زيّه الجديد: قميص ${u.shirtAr} و${u.garAr} ${u.bottomAr}، ووقفَ أمام بوابة ${u.school} وهو يمسك حزام حقيبته بقوّة. كان قلبه يدقّ بسرعة.`})
+     : ({text:`لبسَت ${n} زيّها الجديد: قميص ${u.shirtAr} و${u.garAr} ${u.bottomAr}، ووقفَت أمام بوابة ${u.school} وهي تمسك حزام حقيبتها بقوّة. كان قلبها يدقّ بسرعة.`}) },
+
+  /* 2 — the school cat */
+  { prompt:"The character crouches down near a school doorway to look at a small apricot-orange cat with white paws and green eyes sitting calmly on the step; the child reaches out one hand slowly; the cat is an ordinary cat standing on all four legs; warm daylight.",
+    en:(n,u)=>({text:`A small apricot-coloured cat sat by the door. ${n} called him "Mishmish" — and Mishmish followed all the way to the classroom.`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`قطّ صغير بلون المشمش جلسَ قرب الباب. سمّاه ${n} «مشمش»، ومشى القطّ خلفه إلى الصف.`})
+     : ({text:`قطّ صغير بلون المشمش جلسَ قرب الباب. سمّته ${n} «مشمش»، ومشى القطّ خلفها إلى الصف.`}) },
+
+  /* 3 — my own desk */
+  { prompt:"The character stands beside a small classroom desk with both hands resting on it, looking down at the desk with a pleased and proud expression, bright ordinary classroom with simple wooden furniture and a sunny window.",
+    en:(n,u)=>({text:`Inside the classroom, the teacher pointed to a desk by the window. From today, that seat belonged to ${n} — and nobody else!`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`في الصف، أشارت المعلّمة إلى طاولة قرب النافذة. من اليوم، صار هذا مقعده هو وحده!`})
+     : ({text:`في الصف، أشارت المعلّمة إلى طاولة قرب النافذة. من اليوم، صار هذا مقعدها هي وحدها!`}) },
+
+  /* 4 — a little shy */
+  { prompt:"A group of young children sit in a circle on a classroom floor; the character sits slightly apart with knees drawn up, quiet and shy; through the window behind them a small apricot-orange cat sits on the outside ledge looking in; soft daylight.",
+    en:(n,u)=>({text:`The children sat in a circle. "Welcome to ${u.school}!" said the teacher. ${n} felt a little shy and stayed very quiet — and there at the window sat Mishmish, watching.`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`جلسَ الأطفال في حلقة. قالت المعلّمة: «أهلاً بكم في ${u.school}!» شعرَ ${n} بالخجل قليلاً وبقيَ صامتاً. ومن النافذة، كان مشمش ينظر إليه.`})
+     : ({text:`جلسَ الأطفال في حلقة. قالت المعلّمة: «أهلاً بكم في ${u.school}!» شعرَت ${n} بالخجل قليلاً وبقيَت صامتة. ومن النافذة، كان مشمش ينظر إليها.`}) },
+
+  /* 5 — a new friend */
+  { prompt:"The character sits at a classroom table beside another young child wearing the same school uniform; both are turned toward each other, smiling and talking; the second child is generic and friendly; warm bright classroom.",
+    en:(n,u)=>({text:`Then the child sitting beside ${n} smiled. "Shall we play together?" And just like that, there was a new friend.`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`ثم ابتسمَ الطفل الجالس بجانبه وقال: «هل تحبّ أن نلعب معاً؟» وهكذا، صار لديه صديق جديد.`})
+     : ({text:`ثم ابتسمَت الطفلة الجالسة بجانبها وقالت: «هل تحبّين أن نلعب معاً؟» وهكذا، صار لديها صديقة جديدة.`}) },
+
+  /* 6 — break time */
+  { prompt:"A sunny school playground; several children run and play in the background; in the foreground the character sits on a low step beside a friend, sharing a snack from a lunchbox; a small apricot-orange cat sits nearby watching the food hopefully; bright midday light.",
+    en:(n,u)=>({text:`At break, everyone ran out into the yard. ${n} shared a snack with the new friend — and didn't feel like a stranger any more.`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`في الفسحة، ركضَ الجميع إلى ساحة ${u.school}. شاركَ ${n} طعامه مع صديقه، ولم يعد غريباً هنا.`})
+     : ({text:`في الفسحة، ركضَ الجميع إلى ساحة ${u.school}. شاركَت ${n} طعامها مع صديقتها، ولم تعد غريبة هنا.`}) },
+
+  /* 7 — the thing I love (parent picks) */
+  { talents:{
+      reading:{
+        prompt:"The character stands at the front of a bright classroom holding an open book with both hands, reading aloud confidently, classmates seated on the floor listening happily.",
+        en:(n,u)=>({text:`Then ${n} read a story out loud to the whole class, clear and strong. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم قرأَ ${n} قصّة أمام الصف بصوتٍ واضح. صفّق الجميع!`})
+         : ({text:`ثم قرأَت ${n} قصّة أمام الصف بصوتٍ واضح. صفّق الجميع!`}) },
+      drawing:{
+        prompt:"The character holds up a colourful abstract painting with both hands while an adult's hands pin it onto a classroom display board; classmates look on admiringly; bright classroom.",
+        en:(n,u)=>({text:`Then ${n} painted a beautiful picture, and the teacher pinned it up on the wall for everyone to see. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم رسمَ ${n} لوحة جميلة، وعلّقتها المعلّمة على الجدار ليراها الجميع. صفّق الجميع!`})
+         : ({text:`ثم رسمَت ${n} لوحة جميلة، وعلّقتها المعلّمة على الجدار ليراها الجميع. صفّق الجميع!`}) },
+      football:{
+        prompt:"The character is mid-kick striking a football on a sunny school yard, full of energy and joy, classmates cheering in the background, bright daylight.",
+        en:(n,u)=>({text:`Then ${n} scored a goal in PE — a really good one. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم سجّلَ ${n} هدفاً رائعاً في حصّة الرياضة. صفّق الجميع!`})
+         : ({text:`ثم سجّلَت ${n} هدفاً رائعاً في حصّة الرياضة. صفّق الجميع!`}) },
+      science:{
+        prompt:"The character stands at a classroom table with a simple science demonstration, a clear beaker of colourful bubbling liquid, classmates leaning in surprised and delighted, bright classroom.",
+        en:(n,u)=>({text:`Then ${n} showed the class a science experiment, and everybody gasped. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم أجرى ${n} تجربة علمية أمام الصف، فتفاجأ الجميع. صفّق الجميع!`})
+         : ({text:`ثم أجرَت ${n} تجربة علمية أمام الصف، فتفاجأ الجميع. صفّق الجميع!`}) },
+      singing:{
+        prompt:"The character stands singing in front of a class, mouth open mid-song, hands loose at their sides, happy and unselfconscious, classmates listening and smiling, bright classroom.",
+        en:(n,u)=>({text:`Then ${n} sang a song for the whole class, right to the very last line. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم غنّى ${n} أغنية أمام الصف كلّه حتى آخر كلمة. صفّق الجميع!`})
+         : ({text:`ثم غنَّت ${n} أغنية أمام الصف كلّه حتى آخر كلمة. صفّق الجميع!`}) },
+      building:{
+        prompt:"The character kneels beside a tall tower built from plain colourful wooden blocks, carefully placing the final block on top, classmates watching admiringly, bright classroom.",
+        en:(n,u)=>({text:`Then ${n} built the tallest tower in the class, one block at a time. Everybody clapped!`}),
+        ar:(n,g,u)=> g==="boy"
+         ? ({text:`ثم بنى ${n} أطول برجٍ في الصف، مكعّباً بعد مكعّب. صفّق الجميع!`})
+         : ({text:`ثم بنَت ${n} أطول برجٍ في الصف، مكعّباً بعد مكعّب. صفّق الجميع!`}) }
+    } },
+
+  /* 8 — tomorrow */
+  { prompt:"The character stands just inside the front door of a cosy family home at dusk, a plain hallway with no view of the street outside, still wearing the school uniform, schoolbag set down beside the door, warm lamp light, tired but happy and proud.",
+    en:(n,u)=>({text:`That evening ${n} said, "I love my school${u.school?", "+u.school:""}… and tomorrow I'll discover something new!" The End ⭐`}),
+    ar:(n,g,u)=> g==="boy"
+     ? ({text:`في المساء، قال ${n}: «أحبّ مدرستي${u.school?" "+u.school:""}… وغداً سأكتشف شيئاً جديداً!» النهاية ⭐`})
+     : ({text:`في المساء، قالت ${n}: «أحبّ مدرستي${u.school?" "+u.school:""}… وغداً سأكتشف شيئاً جديداً!» النهاية ⭐`}) }
+  ]
+}};
+
+/* ==================== UI STRINGS ==================== */
+const T = {
+en:{
+  kicker:"My School Adventures",
+  schoolLabel:"School name (as it should appear in the story)",
+  initLabel:"School initials for the badge (up to 3 letters — optional)",
+  uniformLabel:"School uniform — shirt, bottom, and its colour",
+  talentLabel:"What does your child love most at school?",
+  talents:{reading:"Reading 📖",drawing:"Drawing 🎨",football:"Football ⚽",
+           science:"Science 🔬",singing:"Singing 🎵",building:"Building 🧱"},
+  codeTitle:"Enter your magic code", codeSub:"You received it with your purchase.",
+  codeLabel:"Access code", codeBtn:"Unlock ✨",
+  codeChecking:"Checking…", codeBad:"Hmm, that code wasn't found. Please check the spelling.",
+  codeEmpty:"This code has no image credits left.",
+  themeTitle:"Choose your school story", themeSub:"Every story stars your child as the hero.",
+  resumeFound:"📖 A saved book was found on this device:", resumeOpen:"Open my saved book",
+  resumeNew:"…or start a new adventure below (this will replace the saved one):",
+  resumeConfirm:"Starting a new adventure will REPLACE your saved book:\n\n{BOOK}\n\nContinue?",
+  setupTitle:"Tell us about your hero", setupSub:"Name, and one nice clear photo of the face.",
+  nameLabel:"Child's name (as it should appear in the story)",
+  genderLabel:"The story's hero is a…", boy:"Boy 👦", girl:"Girl 👧",
+  photoLabel:"Photo", photoTitle:"Tap to choose a photo", photoHint:"a clear, well-lit face works best",
+  photoTips:"💡 Best results: front-facing photo, good light, face large in the frame.",
+  privacy:"🔒 The photo is used only to create the storybook character and is not stored by us.",
+  setupBtn:"Create my explorer! 🎨",
+  charTitle:"Meet your explorer!", charSub:"We turned the photo into a storybook character.",
+  charApprove:"Perfect! Make the book 📖", charRetry:"Try again 🔄",
+  charWorking:["Mixing the paint colors…","Sketching your explorer…","Adding the finishing touches…","Almost ready…"],
+  genTitle:"Painting your story…", genSub:"This takes a few minutes — every page is painted just for you. Please keep this page open.",
+  genPage:"Painting page", genOf:"of",
+  genErr:"Page generation hit a problem: ", genRetry:"Continue where we stopped ▶",
+  bookTitle:"Your book is ready! 🎉", bookSub:"Flip through it, then download the PDF to keep and print.",
+  back:"← Back", next:"Turn the page →", theEnd:"The End 🌙",
+  regenPage:"🔄 Repaint this page", pdf:"⬇ Download PDF",
+  pdfWorking:"Building your PDF…",
+  page:"Page", credits:"image credits left",
+  netErr:"Could not reach the server. Check your internet and try again."
+},
+ar:{
+  kicker:"مغامرات مدرستي",
+  schoolLabel:"اسم المدرسة (كما يظهر في القصة)",
+  initLabel:"حروف المدرسة للشعار (٣ حروف كحد أقصى — اختياري)",
+  uniformLabel:"الزيّ المدرسي — القميص والقطعة السفلية ولونها",
+  talentLabel:"ما أكثر شيء يحبّه طفلكِ في المدرسة؟",
+  talents:{reading:"القراءة 📖",drawing:"الرسم 🎨",football:"كرة القدم ⚽",
+           science:"العلوم 🔬",singing:"الغناء 🎵",building:"البناء 🧱"},
+  codeTitle:"أدخل الرمز السحري", codeSub:"وصلك الرمز مع عملية الشراء.",
+  codeLabel:"رمز الدخول", codeBtn:"افتح ✨",
+  codeChecking:"جارٍ التحقق…", codeBad:"لم نجد هذا الرمز. تأكد من كتابته بشكل صحيح.",
+  codeEmpty:"لا يحتوي هذا الرمز على رصيد صور.",
+  themeTitle:"اختر قصّتك المدرسية", themeSub:"في كل قصة، طفلكِ هو البطل.",
+  resumeFound:"📖 يوجد كتاب محفوظ على هذا الجهاز:", resumeOpen:"افتح كتابي المحفوظ",
+  resumeNew:"…أو ابدأ مغامرة جديدة من الأسفل (ستحلّ محل الكتاب المحفوظ):",
+  resumeConfirm:"بدء مغامرة جديدة سيحلّ محل كتابك المحفوظ:\n\n{BOOK}\n\nهل تريد المتابعة؟",
+  setupTitle:"أخبرنا عن بطل القصة", setupSub:"الاسم، وصورة واضحة للوجه.",
+  nameLabel:"اسم الطفل (كما سيظهر في القصة)",
+  genderLabel:"بطل القصة…", boy:"ولد 👦", girl:"بنت 👧",
+  photoLabel:"الصورة", photoTitle:"اضغط لاختيار صورة", photoHint:"صورة واضحة وبإضاءة جيدة للوجه",
+  photoTips:"💡 لأفضل نتيجة: صورة أمامية، بإضاءة جيدة، والوجه يملأ الصورة.",
+  privacy:"🔒 تُستخدم الصورة فقط لإنشاء شخصية القصة ولا نقوم بتخزينها.",
+  setupBtn:"ارسم مستكشفي! 🎨",
+  charTitle:"تعرّف على مستكشفك!", charSub:"حوّلنا الصورة إلى شخصية كرتونية للقصة.",
+  charApprove:"رائع! اصنع الكتاب 📖", charRetry:"حاول مرة أخرى 🔄",
+  charWorking:["نخلط ألوان الرسم…","نرسم ملامح المستكشف…","نضيف اللمسات الأخيرة…","اقتربنا…"],
+  genTitle:"نرسم قصتك الآن…", genSub:"يستغرق هذا بضع دقائق — كل صفحة تُرسم خصيصًا لك. من فضلك أبقِ الصفحة مفتوحة.",
+  genPage:"نرسم الصفحة", genOf:"من",
+  genErr:"حدثت مشكلة أثناء رسم الصفحة: ", genRetry:"أكمل من حيث توقفنا ▶",
+  bookTitle:"كتابك جاهز! 🎉", bookSub:"تصفّحه ثم حمّل ملف PDF للاحتفاظ به وطباعته.",
+  back:"→ السابق", next:"اقلب الصفحة ←", theEnd:"النهاية 🌙",
+  regenPage:"🔄 أعد رسم هذه الصفحة", pdf:"⬇ تحميل PDF",
+  pdfWorking:"نجهّز ملف PDF…",
+  page:"صفحة", credits:"رصيد الصور المتبقي",
+  netErr:"تعذّر الوصول إلى الخادم. تحقق من الإنترنت وحاول مجددًا."
+}};
+
+/* ==================== STATE ==================== */
+const S = {
+  lang:"en", code:"", credits:0, name:"", gender:null, theme:null,
+  photo:null, character:null,
+  school:"", initials:"", shirt:"white", bottom:"navy", garment:"trousers", talent:"reading",
+  pages:[], genIndex:0, page:0, busy:false
+};
+const $=id=>document.getElementById(id);
+const t=k=>T[S.lang][k];
+const story=()=>THEMES[S.theme].story.map(sc=>{
+  if(!sc.talents) return sc;
+  return sc.talents[S.talent] || sc.talents.reading;
+});
+
+/* ==================== LANGUAGE ==================== */
+function inAppBrowser(){
+  const ua=navigator.userAgent||"";
+  if(/(FBAN|FBAV|FB_IAB|Instagram|Line\/|Twitter|TikTok|BytedanceWebview|Snapchat|LinkedInApp|GmailApp)/i.test(ua)) return true;
+  // iOS in-app webviews lack the "Safari" token that real Safari always sends
+  if(/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua)) return true;
+  return false;
+}
+if(inAppBrowser()){ var _w=document.getElementById("iabWarn"); if(_w) _w.classList.add("on"); }
+
+window.setLang = function(l){
+  S.lang=l;
+  document.querySelectorAll("#iabWarn .ien").forEach(e=>e.style.display=(l==="ar"?"none":"inline"));
+  document.querySelectorAll("#iabWarn .iar").forEach(e=>e.style.display=(l==="ar"?"inline":"none"));
+  document.documentElement.lang = l==="ar"?"ar":"en";
+  document.documentElement.dir  = l==="ar"?"rtl":"ltr";
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const k=el.getAttribute("data-t");
+    if(T[l][k]) el.textContent=T[l][k];
+  });
+  show("s-code");
+};
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  $(id).classList.add("on");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function updCredits(){
+  const line="💳 "+S.credits+" "+t("credits");
+  ["creditsLine1","creditsLine2","creditsLine3"].forEach(i=>$(i).textContent=line);
+}
+
+/* ==================== LOCAL SAVE (IndexedDB) ==================== */
+function idbOpen(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("school-adventures",1);
+    r.onupgradeneeded=()=>r.result.createObjectStore("books");
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+}
+async function idbSet(k,v){
+  const d=await idbOpen();
+  return new Promise((res,rej)=>{
+    const tx=d.transaction("books","readwrite");
+    tx.objectStore("books").put(v,k);
+    tx.oncomplete=res; tx.onerror=()=>rej(tx.error);
+  });
+}
+async function idbGet(k){
+  const d=await idbOpen();
+  return new Promise((res,rej)=>{
+    const q=d.transaction("books","readonly").objectStore("books").get(k);
+    q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error);
+  });
+}
+async function saveBook(){
+  if(!S.code||!S.theme) return;
+  try{
+    await idbSet(S.code,{lang:S.lang,theme:S.theme,name:S.name,gender:S.gender,
+      school:S.school,initials:S.initials,shirt:S.shirt,bottom:S.bottom,
+      garment:S.garment,talent:S.talent,
+      character:S.character,pages:S.pages,ts:Date.now()});
+  }catch(e){/* storage full or unavailable — the app still works, just without resume */}
+}
+
+/* ==================== API ==================== */
+async function api(path,payload){
+  const r=await fetch(WORKER_URL+path,{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  });
+  return r.json();
+}
+async function generateImage(refDataURL,prompt){
+  const data=await api("/generate",{code:S.code,photo:refDataURL,prompt});
+  if(data.error) throw new Error(data.error);
+  S.credits=data.credits; updCredits();
+  return "data:image/png;base64,"+data.image;
+}
+
+/* ==================== SCREEN 1: CODE ==================== */
+window.checkCode = async function(){
+  const n=$("codeNotice"); n.className="notice";
+  const code=$("codeInput").value.trim().toUpperCase();
+  if(!code) return;
+  $("codeBtn").disabled=true; $("codeBtn").textContent=t("codeChecking");
+  try{
+    const data=await api("/check",{code});
+    if(!data.valid){ n.className="notice err"; n.textContent=t("codeBad"); }
+    else if(data.credits<=0){ n.className="notice err"; n.textContent=t("codeEmpty"); }
+    else{
+      S.code=code; S.credits=data.credits; updCredits();
+      try{ S.saved=await idbGet(code)||null; }catch(e){ S.saved=null; }
+      if(S.saved && !THEMES[S.saved.theme]) S.saved=null;
+      renderThemePicker();
+      show("s-theme");
+    }
+  }catch(e){ n.className="notice err"; n.textContent=t("netErr"); }
+  $("codeBtn").disabled=false; $("codeBtn").textContent=t("codeBtn");
+};
+
+/* ==================== SCREEN 2: THEME ==================== */
+function renderThemePicker(){
+  const box=$("themePick");
+  box.innerHTML="";
+  if(S.saved && S.saved.character){
+    const done=S.saved.pages.filter(Boolean).length, total=S.saved.pages.length;
+    const th=THEMES[S.saved.theme];
+    const wrap=document.createElement("div");
+    wrap.style.cssText="grid-column:1/-1;text-align:center";
+    wrap.innerHTML='<p style="font-weight:800;margin-bottom:10px">'+t("resumeFound")+" "+
+      th.icon+" "+th.name[S.saved.lang]+" — "+escStr(S.saved.name)+
+      (done<total?" ("+done+"/"+total+")":"")+'</p>';
+    const b=document.createElement("button");
+    b.className="btn"; b.textContent=t("resumeOpen");
+    b.onclick=resumeSaved;
+    wrap.appendChild(b);
+    const hint=document.createElement("p");
+    hint.style.cssText="font-weight:700;font-size:.85rem;color:var(--ink-soft);margin-top:12px";
+    hint.textContent=t("resumeNew");
+    wrap.appendChild(hint);
+    box.appendChild(wrap);
+  }
+  Object.entries(THEMES).forEach(([id,th])=>{
+    const b=document.createElement("button");
+    b.innerHTML='<span class="ticon">'+th.icon+'</span>'+th.name[S.lang]+
+      '<small>'+th.tag[S.lang]+'</small>';
+    b.onclick=()=>{ pickTheme(id); };
+    box.appendChild(b);
+  });
+}
+function escStr(x){return String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+window.resumeSaved=function(){
+  const sv=S.saved;
+  if(!sv) return;
+  if(sv.lang!==S.lang) setLangSilent(sv.lang);
+  S.theme=sv.theme; S.name=sv.name; S.gender=sv.gender;
+  S.school=sv.school||""; S.initials=sv.initials||"";
+  S.shirt=sv.shirt||"white"; S.bottom=sv.bottom||"navy";
+  S.garment=sv.garment||"trousers"; S.talent=sv.talent||"reading";
+  S.character=sv.character; S.pages=sv.pages.slice();
+  const missing=S.pages.findIndex(p=>!p);
+  if(missing===-1){
+    S.page=0; renderBook(); show("s-book");
+  } else {
+    show("s-gen"); buildThumbRow();
+    S.genIndex=missing; runGeneration();
+  }
+};
+function setLangSilent(l){
+  S.lang=l;
+  document.documentElement.lang=l==="ar"?"ar":"en";
+  document.documentElement.dir=l==="ar"?"rtl":"ltr";
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const k=el.getAttribute("data-t");
+    if(T[l][k]) el.textContent=T[l][k];
+  });
+  try{ buildSelects(); }catch(e){}
+  updCredits();
+}
+function pickTheme(id){
+  if(S.saved && S.saved.character){
+    const th=THEMES[S.saved.theme];
+    const done=S.saved.pages.filter(Boolean).length, total=S.saved.pages.length;
+    const desc=th.icon+" "+th.name[S.saved.lang]+" — "+S.saved.name+(done<total?" ("+done+"/"+total+")":"");
+    if(!confirm(t("resumeConfirm").replace("{BOOK}",desc))) return;
+    S.saved=null;
+  }
+  S.theme=id;
+  S.pages=new Array(THEMES[id].story.length).fill(null);
+  S.character=null;
+  buildSelects();
+  validateSetup();
+  show("s-setup");
+}
+
+/* ==================== SCREEN 3: SETUP ==================== */
+$("genderPills").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#genderPills button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); S.gender=b.dataset.g; validateSetup();
+});
+$("kidName").addEventListener("input",validateSetup);
+$("dropZone").addEventListener("click",()=>$("fileInput").click());
+$("fileInput").addEventListener("change",async ()=>{
+  const f=$("fileInput").files[0]; if(!f) return;
+  if(!f.type.startsWith("image/")) return;
+  S.photo=await downscale(f,1024);
+  $("thumb").src=S.photo; $("thumb").style.display="block";
+  validateSetup();
+});
+async function downscale(file,maxSide){
+  let bmp;
+  try{ bmp=await createImageBitmap(file,{imageOrientation:"from-image"}); }
+  catch(e){
+    bmp=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file);});
+  }
+  const w=bmp.width||bmp.naturalWidth,h=bmp.height||bmp.naturalHeight;
+  const k=Math.min(1,maxSide/Math.max(w,h));
+  const c=document.createElement("canvas");
+  c.width=Math.round(w*k);c.height=Math.round(h*k);
+  const ctx=c.getContext("2d"); ctx.imageSmoothingQuality="high";
+  ctx.drawImage(bmp,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",0.87);
+}
+function validateSetup(){
+  S.name=$("kidName").value.trim();
+  S.school=$("schoolName").value.trim();
+  S.initials=$("schoolInit").value.trim().toUpperCase().replace(/[^A-Z\u0621-\u064A]/g,"").slice(0,3);
+  if($("schoolInit").value!==S.initials) $("schoolInit").value=S.initials;
+  S.shirt=$("shirtSel").value; S.bottom=$("bottomSel").value; S.garment=$("garmentSel").value;
+  S.talent=$("talentSel").value;
+  $("setupBtn").disabled=!(S.name && S.gender && S.photo && S.school);
+}
+
+/* fill the dropdowns in the current language */
+function buildSelects(){
+  const cl=UCOL_LABEL[S.lang], gl=GARMENT_LABEL[S.lang], tl=T[S.lang].talents;
+  const opts=(o,sel)=>Object.entries(o).map(([v,l])=>
+    '<option value="'+v+'"'+(v===sel?' selected':'')+'>'+l+'</option>').join("");
+  $("shirtSel").innerHTML   = opts(cl, S.shirt);
+  $("bottomSel").innerHTML  = opts(cl, S.bottom);
+  $("garmentSel").innerHTML = opts(gl, S.garment);
+  $("talentSel").innerHTML  = opts(tl, S.talent);
+}
+["schoolName","schoolInit"].forEach(id=>$(id).addEventListener("input",validateSetup));
+["shirtSel","bottomSel","garmentSel","talentSel"].forEach(id=>$(id).addEventListener("change",validateSetup));
+
+/* ==================== SCREEN 4: CHARACTER ==================== */
+let charMsgTimer=null;
+window.startCharacter=function(){ show("s-char"); makeCharacter(); };
+
+function characterPrompt(){
+  return CHAR_BASE
+    .replace("{GENDER}", S.gender==="boy"?"boy":"girl")
+    .replace("{OUTFIT}", typeof THEMES[S.theme].outfit === "function"
+        ? THEMES[S.theme].outfit(uni())
+        : THEMES[S.theme].outfit);
+}
+function sceneSuffix(){
+  const u=uni();
+  const extra=" Any other children in the scene are pupils of the same school and wear"+
+    " the same uniform: a "+u.shirtEn+" short-sleeved collared shirt and "+u.bottomEn+
+    " trousers or skirt. Books, papers and posters show pictures only, never writing.";
+  return SUFFIX_BASE.replace("{PALETTE}", THEMES[S.theme].palette)+extra;
+}
+
+async function makeCharacter(){
+  if(S.busy) return; S.busy=true;
+  $("charImg").style.display="none";
+  $("charActions").style.display="none";
+  $("charNotice").className="notice";
+  $("charProgress").style.display="block";
+  animateBar("charBar",45000);
+  let mi=0;
+  $("charMsg").textContent=t("charWorking")[0];
+  charMsgTimer=setInterval(()=>{mi=(mi+1)%t("charWorking").length;$("charMsg").textContent=t("charWorking")[mi];},4000);
+  try{
+    const img=await generateImage(S.photo,characterPrompt());
+    S.character=img;
+    saveBook();
+    $("charImg").src=img; $("charImg").style.display="block";
+    $("charActions").style.display="flex";
+  }catch(e){
+    $("charNotice").className="notice err";
+    $("charNotice").textContent=(e.message||t("netErr"));
+    $("charActions").style.display="flex";
+  }
+  clearInterval(charMsgTimer);
+  $("charProgress").style.display="none";
+  S.busy=false;
+}
+window.regenCharacter=()=>makeCharacter();
+window.approveCharacter=function(){
+  show("s-gen");
+  buildThumbRow();
+  S.genIndex=0;
+  runGeneration();
+};
+
+/* ==================== SCREEN 5: GENERATION ==================== */
+let funTimer=null;
+function buildThumbRow(){
+  const row=$("thumbRow"); row.innerHTML="";
+  story().forEach((_,i)=>{
+    const d=document.createElement("div");
+    d.className="t"; d.id="thumb-"+i; d.textContent="🖌️";
+    row.appendChild(d);
+  });
+  S.pages.forEach((p,i)=>{ if(p) $("thumb-"+i).innerHTML='<img src="'+p+'">'; });
+}
+function animateBar(id,ms){
+  const bar=$(id); bar.style.transition="none"; bar.style.width="4%";
+  requestAnimationFrame(()=>{bar.style.transition="width "+ms+"ms linear";bar.style.width="92%";});
+}
+async function runGeneration(){
+  if(S.busy) return; S.busy=true;
+  $("genNotice").className="notice";
+  $("genRetryWrap").style.display="none";
+  const fun=THEMES[S.theme].fun[S.lang];
+  let fi=0;
+  clearInterval(funTimer);
+  funTimer=setInterval(()=>{fi=(fi+1)%fun.length;$("genSubMsg").textContent=fun[fi];},5000);
+  $("genSubMsg").textContent=fun[0];
+
+  const st=story();
+  for(let i=S.genIndex;i<st.length;i++){
+    S.genIndex=i;
+    $("genMsg").textContent=t("genPage")+" "+(i+1)+" "+t("genOf")+" "+st.length;
+    $("genBar").style.transition="width .6s ease";
+    $("genBar").style.width=Math.round(i/st.length*100)+"%";
+    if(S.pages[i]) continue;
+    try{
+      const img=await tryTwice(()=>generateImage(S.character, st[i].prompt+sceneSuffix()));
+      S.pages[i]=img;
+      saveBook();
+      $("thumb-"+i).innerHTML='<img src="'+img+'">';
+    }catch(e){
+      clearInterval(funTimer);
+      $("genNotice").className="notice err";
+      $("genNotice").textContent=t("genErr")+(e.message||t("netErr"));
+      $("genRetryWrap").style.display="block";
+      S.busy=false;
+      return;
+    }
+  }
+  clearInterval(funTimer);
+  $("genBar").style.width="100%";
+  S.busy=false;
+  S.page=0;
+  renderBook();
+  show("s-book");
+}
+async function tryTwice(fn){
+  try{ return await fn(); }
+  catch(e){
+    if(/credit|code/i.test(e.message)) throw e;
+    return await fn();
+  }
+}
+window.resumeGeneration=()=>runGeneration();
+
+/* ==================== SCREEN 6: BOOK ==================== */
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function pageText(i){
+  const sc=story()[i];
+  const u=uni();
+  return S.lang==="ar" ? sc.ar(S.name,S.gender,u) : sc.en(S.name,u);
+}
+function renderBook(){
+  const st=story();
+  $("book").innerHTML=st.map((sc,i)=>{
+    const pt=pageText(i);
+    const nameHTML='<span class="kidname">'+esc(S.name)+'</span>';
+    const body=esc(pt.text).split(esc(S.name)).join(nameHTML);
+    const label=i===0?"":t("page")+" "+i;
+    return '<article class="page'+(i===S.page?" on":"")+'">'+
+      '<img class="illu" src="'+(S.pages[i]||"")+'" alt="">'+
+      '<div class="caption">'+
+        (pt.title?'<div class="booktitle">'+esc(pt.title).split(esc(S.name)).join(nameHTML)+'</div>':'')+
+        '<p>'+body+'</p>'+
+        (label?'<div class="pageno">'+label+'</div>':'')+
+      '</div></article>';
+  }).join("");
+  $("prevBtn").disabled=S.page===0;
+  $("nextBtn").disabled=S.page===st.length-1;
+  $("nextBtn").textContent=S.page===st.length-1?t("theEnd"):t("next");
+}
+$("prevBtn").addEventListener("click",()=>{if(S.page>0){S.page--;renderBook();}});
+$("nextBtn").addEventListener("click",()=>{if(S.page<story().length-1){S.page++;renderBook();}});
+
+window.regenCurrentPage=async function(){
+  if(S.busy) return; S.busy=true;
+  const i=S.page,n=$("bookNotice");
+  n.className="notice";
+  $("regenPageBtn").disabled=true;
+  $("regenPageBtn").textContent="🖌️ …";
+  try{
+    const img=await generateImage(S.character, story()[i].prompt+sceneSuffix());
+    S.pages[i]=img; saveBook(); renderBook();
+  }catch(e){ n.className="notice err"; n.textContent=(e.message||t("netErr")); }
+  $("regenPageBtn").disabled=false;
+  $("regenPageBtn").textContent=t("regenPage");
+  S.busy=false;
+};
+
+/* ==================== PDF ==================== */
+window.downloadPDF=async function(){
+  if(S.busy) return; S.busy=true;
+  const btn=$("pdfBtn"); btn.disabled=true; btn.textContent=t("pdfWorking");
+  try{
+    await document.fonts.ready;
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+    const st=story();
+    for(let i=0;i<st.length;i++){
+      if(i>0) pdf.addPage();
+      const cnv=await composePage(i);
+      pdf.addImage(cnv.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297);
+    }
+    const themeName=THEMES[S.theme].name[S.lang].replace(/\s+/g,"-");
+    const fname=(S.lang==="ar"?"قصة-":"storybook-")+S.name+"-"+themeName+".pdf";
+    pdf.save(fname);
+  }catch(e){
+    const n=$("bookNotice"); n.className="notice err"; n.textContent=e.message;
+  }
+  btn.disabled=false; btn.textContent=t("pdf");
+  S.busy=false;
+};
+
+async function composePage(i){
+  const W=1240,H=1754;
+  const c=document.createElement("canvas"); c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  const ar=S.lang==="ar";
+  const dispFont=ar?"'Baloo Bhaijaan 2'":"'Fredoka'";
+  const bodyFont=ar?"'Baloo Bhaijaan 2'":"'Nunito'";
+  x.fillStyle="#FFF8EC"; x.fillRect(0,0,W,H);
+  x.fillStyle="#F5DEB0";
+  x.beginPath(); x.arc(W-90,90,140,0,7); x.fill();
+  x.beginPath(); x.arc(70,H-70,110,0,7); x.fill();
+  const img=await loadImg(S.pages[i]);
+  const iw=W-260, ix=130, iy=80;
+  roundImage(x,img,ix,iy,iw,iw,36);
+  x.strokeStyle="#fff"; x.lineWidth=10;
+  roundRectPath(x,ix,iy,iw,iw,36); x.stroke();
+  drawBadge(x,ix,iy,dispFont);
+  const pt=pageText(i);
+  x.textAlign="center"; x.fillStyle="#3B2A4A"; x.direction=ar?"rtl":"ltr";
+  let ty=iy+iw+90;
+  if(pt.title){
+    x.font="700 60px "+dispFont;
+    ty=wrapText(x,pt.title,W/2,ty,W-220,74);
+    ty+=24;
+  }
+  x.font="700 42px "+bodyFont;
+  ty=wrapText(x,pt.text,W/2,ty,W-240,62);
+  if(i>0){
+    x.font="600 26px "+dispFont; x.fillStyle="#6D5C80";
+    const pageY=Math.min(H-46, ty+54);
+    x.fillText(t("page")+" "+i, W/2, pageY);
+  }
+  return c;
+}
+/* School crest drawn on the page itself — never generated, so it is always
+   correct. Sits on the top-left corner of the illustration. */
+function drawBadge(x,ix,iy,dispFont){
+  const init=(S.initials||"").trim();
+  if(!init) return;
+  const cx=ix+66, cy=iy+66, r=52;
+  x.save();
+  x.beginPath(); x.arc(cx,cy,r,0,7);
+  x.fillStyle="#12508F"; x.fill();               // ACA blue
+  x.lineWidth=7; x.strokeStyle="#F5B324"; x.stroke();  // ACA gold
+  x.fillStyle="#fff";
+  x.textAlign="center"; x.textBaseline="middle"; x.direction="ltr";
+  x.font="700 "+(init.length>2?34:42)+"px "+dispFont;
+  x.fillText(init,cx,cy+2);
+  x.restore();
+  x.textBaseline="alphabetic";
+}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function roundRectPath(x,px,py,w,h,r){
+  x.beginPath();
+  x.moveTo(px+r,py); x.arcTo(px+w,py,px+w,py+h,r); x.arcTo(px+w,py+h,px,py+h,r);
+  x.arcTo(px,py+h,px,py,r); x.arcTo(px,py,px+w,py,r); x.closePath();
+}
+function roundImage(x,img,px,py,w,h,r){
+  x.save(); roundRectPath(x,px,py,w,h,r); x.clip();
+  x.drawImage(img,px,py,w,h); x.restore();
+}
+function wrapText(x,text,cx,y,maxW,lineH){
+  const words=text.split(" ");
+  let line="";
+  for(const w of words){
+    const test=line?line+" "+w:w;
+    if(x.measureText(test).width>maxW && line){
+      x.fillText(line,cx,y); y+=lineH; line=w;
+    } else line=test;
+  }
+  if(line){ x.fillText(line,cx,y); y+=lineH; }
+  return y;
+}
+
+})();
+</script>
+</body>
+</html>
