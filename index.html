@@ -371,7 +371,7 @@ firstday: {
   tag:{en:"A new school, a new friend & a cat named Mishmish",
        ar:"مدرسة جديدة وصديق جديد وقطّ اسمه مشمش"},
   outfit:(u)=>`Dress the character in a school uniform: a ${u.shirtEn} short-sleeved collared shirt with a small plain ${u.bottomEn} shield-shaped school crest on the left chest, ${u.bottomEn} ${u.garEn}, white socks and black shoes. The hair and full face must stay clearly visible.`,
-  palette:"warm palette built on deep royal blue and warm gold, with cream stone tones and bright Gulf daylight",
+  palette:"warm palette built on deep blue and warm gold with cream stone tones and bright Gulf daylight; classrooms have cream walls, deep blue furniture trim and large sunny windows",
   fun:{
     en:["Ironing the new uniform… 👕","Waking Mishmish from his nap… 🐱","Writing name cards for the desks… ✏️","Filling the playground with sunshine… ☀️","Sharpening a hundred pencils… ✏️","Saving a seat in the circle… 🪑"],
     ar:["نكوي الزيّ المدرسي الجديد… 👕","نوقظ مشمش من قيلولته… 🐱","نكتب الأسماء على الطاولات… ✏️","نملأ الساحة بأشعة الشمس… ☀️","نبري مئة قلم رصاص… ✏️","نحجز مقعداً في الحلقة… 🪑"]
@@ -379,12 +379,12 @@ firstday: {
   story:[
 
   /* 0 — cover */
-  { prompt:"The character stands at the open gate of a school in bright morning light, schoolbag on both shoulders, smiling proudly at the viewer, behind is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight, other children arriving in the distance.",
+  { prompt:"The character stands at the open gate of a school in bright morning light, schoolbag on both shoulders, smiling proudly at the viewer, behind is a handsome modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed arch over the main entrance outlined in warm gold, palm trees and bright dry sunlight; other children arriving in the distance.",
     en:(n,u)=>({title:`${n}'s First Day at School`, text:`Today is ${n}'s very first day at ${u.school}.`}),
     ar:(n,g,u)=>({title:`أوّل يوم في المدرسة — ${n}`, text:`اليوم هو أوّل يوم لـ${n} في ${u.school}.`}) },
 
   /* 1 — the gate */
-  { prompt:"The character stands just outside a tall blue and gold school gate holding the schoolbag strap tightly with both hands, looking up, a little nervous but determined, warm morning sunlight; behind the gate is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight; other children walk past in the background.",
+  { prompt:"The character stands just outside a tall deep blue and gold school gate holding the schoolbag strap tightly with both hands, looking up, a little nervous but determined, warm morning sunlight; behind the gate is a handsome modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed arch over the main entrance outlined in warm gold, palm trees and bright dry sunlight; other children walk past in the background.",
     en:(n,u)=>({text:`${n} put on the new uniform — a ${u.shirtEn} shirt and ${u.bottomEn} ${u.garEn} — and stood at the gates of ${u.school}, holding the bag strap tight. ${n}'s heart was beating fast.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`لبسَ ${n} زيّه الجديد: قميص ${u.shirtAr} و${u.garAr} ${u.bottomAr}، ووقفَ أمام بوابة ${u.school} وهو يمسك حزام حقيبته بقوّة. كان قلبه يدقّ بسرعة.`})
@@ -440,7 +440,7 @@ firstday: {
          ? ({text:`ثم رسمَ ${n} لوحة جميلة، وعلّقتها المعلّمة على الجدار ليراها الجميع. صفّق الجميع!`})
          : ({text:`ثم رسمَت ${n} لوحة جميلة، وعلّقتها المعلّمة على الجدار ليراها الجميع. صفّق الجميع!`}) },
       football:{
-        prompt:"The character is mid-kick striking a football on a sunny school yard, full of energy and joy, classmates cheering in the background, bright daylight.",
+        prompt:"The character is mid-kick striking a football on a sunny school yard, full of energy and joy, classmates cheering, the pale cream stone school building with deep blue window frames and palm trees visible behind them, bright daylight.",
         en:(n,u)=>({text:`Then ${n} scored a goal in PE — a really good one. Everybody clapped!`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`ثم سجّلَ ${n} هدفاً رائعاً في حصّة الرياضة. صفّق الجميع!`})
@@ -804,8 +804,10 @@ function characterPrompt(){
         ? THEMES[S.theme].outfit(uni())
         : THEMES[S.theme].outfit);
 }
-function sceneSuffix(){
+function sceneSuffix(i){
   const u=uni();
+  if(i===8) return SUFFIX_BASE.replace("{PALETTE}", THEMES[S.theme].palette)+
+    " No other children appear in this scene. Books and papers show pictures only, never writing.";
   const extra=" Any other children in the scene are pupils of the same school and wear"+
     " the same uniform: a "+u.shirtEn+" short-sleeved collared shirt and "+u.bottomEn+
     " trousers or skirt. Books, papers and posters show pictures only, never writing.";
@@ -878,7 +880,7 @@ async function runGeneration(){
     $("genBar").style.width=Math.round(i/st.length*100)+"%";
     if(S.pages[i]) continue;
     try{
-      const img=await tryTwice(()=>generateImage(S.character, st[i].prompt+sceneSuffix()));
+      const img=await tryTwice(()=>generateImage(S.character, st[i].prompt+sceneSuffix(i)));
       S.pages[i]=img;
       saveBook();
       $("thumb-"+i).innerHTML='<img src="'+img+'">';
@@ -943,7 +945,7 @@ window.regenCurrentPage=async function(){
   $("regenPageBtn").disabled=true;
   $("regenPageBtn").textContent="🖌️ …";
   try{
-    const img=await generateImage(S.character, story()[i].prompt+sceneSuffix());
+    const img=await generateImage(S.character, story()[i].prompt+sceneSuffix(i));
     S.pages[i]=img; saveBook(); renderBook();
   }catch(e){ n.className="notice err"; n.textContent=(e.message||t("netErr")); }
   $("regenPageBtn").disabled=false;
@@ -1017,9 +1019,10 @@ function drawBadge(x,ix,iy,dispFont){
   const cx=ix+66, cy=iy+66, r=52;
   x.save();
   x.beginPath(); x.arc(cx,cy,r,0,7);
-  x.fillStyle="#12508F"; x.fill();               // ACA blue
-  x.lineWidth=7; x.strokeStyle="#F5B324"; x.stroke();  // ACA gold
-  x.fillStyle="#fff";
+  const col=UCOL[S.bottom]||UCOL.navy;
+  x.fillStyle=col.hex; x.fill();
+  x.lineWidth=7; x.strokeStyle="#fff"; x.stroke();
+  x.fillStyle=col.dark?"#3B2A4A":"#fff";
   x.textAlign="center"; x.textBaseline="middle"; x.direction="ltr";
   x.font="700 "+(init.length>2?34:42)+"px "+dispFont;
   x.fillText(init,cx,cy+2);
