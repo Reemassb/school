@@ -241,7 +241,7 @@ select{width:100%;padding:14px 12px;border-radius:14px;border:2px solid #E8DCC8;
     <p class="privacy" data-t="privacy"></p>
     <div class="notice" id="setupNotice"></div>
     <div class="center" style="margin-top:18px">
-      <button class="btn" id="setupBtn" onclick="startCharacter()" disabled data-t="setupBtn"></button>
+      <button class="btn" id="setupBtn" onclick="confirmSchool()" disabled data-t="setupBtn"></button>
     </div>
     <p class="credits" id="creditsLine1"></p>
   </div>
@@ -412,14 +412,14 @@ firstday: {
      : ({text:`جلسَ الأطفال في حلقة. قالت المعلّمة: «أهلاً بكم في ${u.school}!» شعرَت ${n} بالخجل قليلاً وبقيَت صامتة. ومن النافذة، كان مشمش ينظر إليها.`}) },
 
   /* 5 — a new friend */
-  { prompt:"The character sits at a classroom table beside another young child wearing the same school uniform; both are turned toward each other, smiling and talking; the second child is generic and friendly; warm bright classroom.",
+  { prompt:"The character sits at a classroom table beside another young child wearing the same school uniform; both are turned toward each other, smiling and talking. The second child is a different child entirely — clearly different hair colour and hairstyle, different face, and must not resemble the reference child. Warm bright classroom.",
     en:(n,u)=>({text:`Then the child sitting beside ${n} smiled. "Shall we play together?" And just like that, there was a new friend.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`ثم ابتسمَ الطفل الجالس بجانبه وقال: «هل تحبّ أن نلعب معاً؟» وهكذا، صار لديه صديق جديد.`})
      : ({text:`ثم ابتسمَت الطفلة الجالسة بجانبها وقالت: «هل تحبّين أن نلعب معاً؟» وهكذا، صار لديها صديقة جديدة.`}) },
 
   /* 6 — break time */
-  { prompt:"A sunny school playground; several children run and play in the background; in the foreground the character sits on a low step beside a friend, sharing a snack from a lunchbox; a small apricot-orange cat sits nearby watching the food hopefully; bright midday light.",
+  { prompt:"A sunny school playground on a Gulf school campus, with pale cream stone walls, deep blue window frames and palm trees; several children run and play in the background; in the foreground the character sits on a low step beside the same friend from the classroom, sharing a snack from a lunchbox. The second child is a different child entirely — clearly different hair colour and hairstyle, different face, and must not resemble the reference child.  a small apricot-orange cat sits nearby watching the food hopefully; bright midday light.",
     en:(n,u)=>({text:`At break, everyone ran out into the yard. ${n} shared a snack with the new friend — and didn't feel like a stranger any more.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`في الفسحة، ركضَ الجميع إلى ساحة ${u.school}. شاركَ ${n} طعامه مع صديقه، ولم يعد غريباً هنا.`})
@@ -770,6 +770,25 @@ async function downscale(file,maxSide){
   ctx.drawImage(bmp,0,0,c.width,c.height);
   return c.toDataURL("image/jpeg",0.87);
 }
+/* Tidy obvious slips, then read the name back before anything is generated —
+   the school name lands in four sentences of a book the parent has paid for. */
+function tidySchool(v){
+  return String(v||"")
+    .replace(/[\\/|_]+/g," ")      // stray slashes and bars
+    .replace(/\s+/g," ")
+    .trim();
+}
+function confirmSchool(){
+  const tidy=tidySchool($("schoolName").value);
+  if(tidy!==$("schoolName").value){ $("schoolName").value=tidy; validateSetup(); }
+  if(!tidy){ return; }
+  const msg = S.lang==="ar"
+    ? "سيظهر اسم المدرسة في القصة هكذا:\n\n"+tidy+"\n\nهل هو صحيح؟"
+    : "The story will say your school's name like this:\n\n"+tidy+"\n\nIs that correct?";
+  if(!confirm(msg)) { $("schoolName").focus(); return; }
+  startCharacter();
+}
+
 function validateSetup(){
   S.name=$("kidName").value.trim();
   S.school=$("schoolName").value.trim();
