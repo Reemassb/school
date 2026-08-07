@@ -241,15 +241,7 @@ select{width:100%;padding:14px 12px;border-radius:14px;border:2px solid #E8DCC8;
     <p class="privacy" data-t="privacy"></p>
     <div class="notice" id="setupNotice"></div>
     <div class="center" style="margin-top:18px">
-      <div id="schoolConfirm" style="display:none;margin:0 0 14px;padding:14px 16px;border-radius:16px;
-     background:#FFF6E0;border:2px solid #E8DCC8">
-      <div style="font-weight:700;margin-bottom:6px" data-t="confirmAsk"></div>
-      <div id="schoolEcho" style="font-size:1.15rem;font-weight:800;margin-bottom:12px"></div>
-      <button class="btn" style="padding:10px 18px;font-size:.95rem" onclick="schoolOk()" data-t="confirmYes"></button>
-      <button class="btn" style="padding:10px 18px;font-size:.95rem;background:#EFE7D8;color:#3B2A4A"
-        onclick="schoolEdit()" data-t="confirmNo"></button>
-    </div>
-    <button class="btn" id="setupBtn" onclick="confirmSchool()" disabled data-t="setupBtn"></button>
+      <button class="btn" id="setupBtn" onclick="startCharacter()" disabled data-t="setupBtn"></button>
     </div>
     <p class="credits" id="creditsLine1"></p>
   </div>
@@ -790,30 +782,11 @@ function tidySchool(v){
     .replace(/\s+/g," ")
     .trim();
 }
-function confirmSchool(){
-  const tidy=tidySchool($("schoolName").value);
-  if(tidy!==$("schoolName").value){ $("schoolName").value=tidy; validateSetup(); }
-  if(!tidy){ return; }
-  $("schoolEcho").textContent = tidy;
-  $("schoolConfirm").style.display = "block";
-  $("setupBtn").style.display = "none";
-  $("schoolConfirm").scrollIntoView({behavior:"smooth", block:"center"});
-}
-function schoolOk(){
-  $("schoolConfirm").style.display="none";
-  $("setupBtn").style.display="";
-  startCharacter();
-}
-function schoolEdit(){
-  $("schoolConfirm").style.display="none";
-  $("setupBtn").style.display="";
-  $("schoolName").focus();
-  $("schoolName").select();
-}
-
 function validateSetup(){
   S.name=$("kidName").value.trim();
-  S.school=$("schoolName").value.trim();
+  const _sc=tidySchool($("schoolName").value);
+  if(_sc!==$("schoolName").value) $("schoolName").value=_sc;
+  S.school=_sc;
   S.initials=$("schoolInit").value.trim().toUpperCase().replace(/[^A-Z\u0621-\u064A]/g,"").slice(0,3);
   if($("schoolInit").value!==S.initials) $("schoolInit").value=S.initials;
   S.shirt=$("shirtSel").value; S.bottom=$("bottomSel").value; S.garment=$("garmentSel").value;
