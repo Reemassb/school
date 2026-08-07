@@ -241,7 +241,15 @@ select{width:100%;padding:14px 12px;border-radius:14px;border:2px solid #E8DCC8;
     <p class="privacy" data-t="privacy"></p>
     <div class="notice" id="setupNotice"></div>
     <div class="center" style="margin-top:18px">
-      <button class="btn" id="setupBtn" onclick="confirmSchool()" disabled data-t="setupBtn"></button>
+      <div id="schoolConfirm" style="display:none;margin:0 0 14px;padding:14px 16px;border-radius:16px;
+     background:#FFF6E0;border:2px solid #E8DCC8">
+      <div style="font-weight:700;margin-bottom:6px" data-t="confirmAsk"></div>
+      <div id="schoolEcho" style="font-size:1.15rem;font-weight:800;margin-bottom:12px"></div>
+      <button class="btn" style="padding:10px 18px;font-size:.95rem" onclick="schoolOk()" data-t="confirmYes"></button>
+      <button class="btn" style="padding:10px 18px;font-size:.95rem;background:#EFE7D8;color:#3B2A4A"
+        onclick="schoolEdit()" data-t="confirmNo"></button>
+    </div>
+    <button class="btn" id="setupBtn" onclick="confirmSchool()" disabled data-t="setupBtn"></button>
     </div>
     <p class="credits" id="creditsLine1"></p>
   </div>
@@ -482,6 +490,8 @@ en:{
   initLabel:"School initials for the badge (up to 3 letters — optional)",
   uniformLabel:"School uniform — shirt, bottom, and its colour",
   talentLabel:"What does your child love most at school?",
+  confirmAsk:"The story will say your school's name like this — is that right?",
+  confirmYes:"Yes, continue", confirmNo:"Let me fix it",
   talents:{reading:"Reading 📖",drawing:"Drawing 🎨",football:"Football ⚽",
            science:"Science 🔬",singing:"Singing 🎵",building:"Building 🧱"},
   codeTitle:"Enter your magic code", codeSub:"You received it with your purchase.",
@@ -518,6 +528,8 @@ ar:{
   initLabel:"حروف المدرسة للشعار (٣ حروف كحد أقصى — اختياري)",
   uniformLabel:"الزيّ المدرسي — القميص والقطعة السفلية ولونها",
   talentLabel:"ما أكثر شيء يحبّه طفلكِ في المدرسة؟",
+  confirmAsk:"سيظهر اسم المدرسة في القصة هكذا — هل هو صحيح؟",
+  confirmYes:"نعم، تابع", confirmNo:"أريد تعديله",
   talents:{reading:"القراءة 📖",drawing:"الرسم 🎨",football:"كرة القدم ⚽",
            science:"العلوم 🔬",singing:"الغناء 🎵",building:"البناء 🧱"},
   codeTitle:"أدخل الرمز السحري", codeSub:"وصلك الرمز مع عملية الشراء.",
@@ -782,11 +794,21 @@ function confirmSchool(){
   const tidy=tidySchool($("schoolName").value);
   if(tidy!==$("schoolName").value){ $("schoolName").value=tidy; validateSetup(); }
   if(!tidy){ return; }
-  const msg = S.lang==="ar"
-    ? "سيظهر اسم المدرسة في القصة هكذا:\n\n"+tidy+"\n\nهل هو صحيح؟"
-    : "The story will say your school's name like this:\n\n"+tidy+"\n\nIs that correct?";
-  if(!confirm(msg)) { $("schoolName").focus(); return; }
+  $("schoolEcho").textContent = tidy;
+  $("schoolConfirm").style.display = "block";
+  $("setupBtn").style.display = "none";
+  $("schoolConfirm").scrollIntoView({behavior:"smooth", block:"center"});
+}
+function schoolOk(){
+  $("schoolConfirm").style.display="none";
+  $("setupBtn").style.display="";
   startCharacter();
+}
+function schoolEdit(){
+  $("schoolConfirm").style.display="none";
+  $("setupBtn").style.display="";
+  $("schoolName").focus();
+  $("schoolName").select();
 }
 
 function validateSetup(){
