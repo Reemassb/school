@@ -370,8 +370,8 @@ firstday: {
   name:{en:"My First Day", ar:"أوّل يوم في المدرسة"},
   tag:{en:"A new school, a new friend & a cat named Mishmish",
        ar:"مدرسة جديدة وصديق جديد وقطّ اسمه مشمش"},
-  outfit:(u)=>`Dress the character in a school uniform: a ${u.shirtEn} short-sleeved collared shirt with a ${u.bottomEn} shield-shaped school crest on the left chest${u.initials?`, and inside that crest the letters "${u.initials}" printed clearly in white block capitals, correctly spelled and level`:""}, ${u.bottomEn} ${u.garEn}, white socks and black shoes. The hair and full face must stay clearly visible.`,
-  palette:"warm bright classroom palette with soft daylight",
+  outfit:(u)=>`Dress the character in a school uniform: a ${u.shirtEn} short-sleeved collared shirt with a small plain ${u.bottomEn} shield-shaped school crest on the left chest, ${u.bottomEn} ${u.garEn}, white socks and black shoes. The hair and full face must stay clearly visible.`,
+  palette:"warm palette built on deep royal blue and warm gold, with cream stone tones and bright Gulf daylight",
   fun:{
     en:["Ironing the new uniform… 👕","Waking Mishmish from his nap… 🐱","Writing name cards for the desks… ✏️","Filling the playground with sunshine… ☀️","Sharpening a hundred pencils… ✏️","Saving a seat in the circle… 🪑"],
     ar:["نكوي الزيّ المدرسي الجديد… 👕","نوقظ مشمش من قيلولته… 🐱","نكتب الأسماء على الطاولات… ✏️","نملأ الساحة بأشعة الشمس… ☀️","نبري مئة قلم رصاص… ✏️","نحجز مقعداً في الحلقة… 🪑"]
@@ -379,12 +379,12 @@ firstday: {
   story:[
 
   /* 0 — cover */
-  { prompt:"The character stands at the open gate of a school in bright morning light, schoolbag on both shoulders, smiling proudly at the viewer, a simple friendly school building behind, other children arriving in the distance.",
+  { prompt:"The character stands at the open gate of a school in bright morning light, schoolbag on both shoulders, smiling proudly at the viewer, behind is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight, other children arriving in the distance.",
     en:(n,u)=>({title:`${n}'s First Day at School`, text:`Today is ${n}'s very first day at ${u.school}.`}),
     ar:(n,g,u)=>({title:`أوّل يوم في المدرسة — ${n}`, text:`اليوم هو أوّل يوم لـ${n} في ${u.school}.`}) },
 
   /* 1 — the gate */
-  { prompt:"The character stands just outside a tall school gate holding the schoolbag strap tightly with both hands, looking up, a little nervous but determined, warm morning sunlight, other children walking past in the background.",
+  { prompt:"The character stands just outside a tall blue and gold school gate holding the schoolbag strap tightly with both hands, looking up, a little nervous but determined, warm morning sunlight; behind the gate is a modern Gulf school building with pale cream stone cladding, deep blue window frames, and a tall pointed Islamic arch shape over the main entrance picked out in gold, palm trees and bright dry sunlight; other children walk past in the background.",
     en:(n,u)=>({text:`${n} put on the new uniform — a ${u.shirtEn} shirt and ${u.bottomEn} ${u.garEn} — and stood at the gates of ${u.school}, holding the bag strap tight. ${n}'s heart was beating fast.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`لبسَ ${n} زيّه الجديد: قميص ${u.shirtAr} و${u.garAr} ${u.bottomAr}، ووقفَ أمام بوابة ${u.school} وهو يمسك حزام حقيبته بقوّة. كان قلبه يدقّ بسرعة.`})
@@ -1014,13 +1014,12 @@ async function composePage(i){
 function drawBadge(x,ix,iy,dispFont){
   const init=(S.initials||"").trim();
   if(!init) return;
-  const col=UCOL[S.bottom]||UCOL.navy;
   const cx=ix+66, cy=iy+66, r=52;
   x.save();
   x.beginPath(); x.arc(cx,cy,r,0,7);
-  x.fillStyle=col.hex; x.fill();
-  x.lineWidth=8; x.strokeStyle="#fff"; x.stroke();
-  x.fillStyle=col.dark?"#3B2A4A":"#fff";
+  x.fillStyle="#12508F"; x.fill();               // ACA blue
+  x.lineWidth=7; x.strokeStyle="#F5B324"; x.stroke();  // ACA gold
+  x.fillStyle="#fff";
   x.textAlign="center"; x.textBaseline="middle"; x.direction="ltr";
   x.font="700 "+(init.length>2?34:42)+"px "+dispFont;
   x.fillText(init,cx,cy+2);
