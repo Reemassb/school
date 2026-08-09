@@ -142,10 +142,10 @@ input[type=text]:focus{outline:3px solid var(--sunny);border-color:var(--ink)}
 html[dir=rtl] .pageno{letter-spacing:0}
 .booknav{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
 .pagefix{text-align:center;margin-top:10px}
-.urow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.ucell{display:flex;flex-direction:column;min-width:0}
+.urow{display:flex;gap:10px;flex-wrap:wrap}
+.ucell{flex:1 1 0;display:flex;flex-direction:column;min-width:0}
 .ulab{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:5px;line-height:1.2}
-@media(max-width:520px){.urow{grid-template-columns:1fr}}
+@media(max-width:520px){.urow{flex-direction:column}.ucell{flex:1 1 auto}}
 select{width:100%;padding:14px 12px;border-radius:14px;border:2px solid #E8DCC8;
   background:#fff;font-family:inherit;font-weight:700;font-size:1rem;color:#3B2A4A}
 </style>
@@ -401,8 +401,8 @@ firstday: {
     trousers:{en:"trousers", ar:"بنطال",  arAcc:"بنطالًا",  label:"Trousers", fem:false},
     skirt:   {en:"skirt",    ar:"تنّورة", arAcc:"تنّورةً",  label:"Skirt",    fem:true }
   },
-  uniformLabel:{en:"School uniform — colours and bottom",
-                ar:"الزيّ المدرسي — الألوان والقطعة السفلية"},
+  uniformLabel:{en:"School uniform",
+                ar:"الزيّ المدرسي"},
   talentLabel:{en:"What does your child love most at school?",
                ar:"ما أكثر شيء يحبّه طفلكِ في المدرسة؟"},
   talents:{
@@ -530,8 +530,8 @@ sportsday: {
     shorts:    {en:"sports shorts",      ar:"شورت",        arAcc:"شورتًا",          label:"Shorts",     fem:false},
     trackpants:{en:"tracksuit trousers", ar:"بنطال رياضي", arAcc:"بنطالًا رياضيًا",  label:"Track pants",fem:false}
   },
-  uniformLabel:{en:"Sports kit — colours and bottom",
-                ar:"الزيّ الرياضي — الألوان والقطعة السفلية"},
+  uniformLabel:{en:"Sports kit",
+                ar:"الزيّ الرياضي"},
   picker:{ main:{en:"Sports shirt colour", ar:"لون القميص الرياضي"} },
   talentLabel:{en:"Which event does your child take part in?",
                ar:"في أيّ مسابقة يشارك طفلكِ؟"},
@@ -659,15 +659,15 @@ nationalday: {
                ar:"دراعة", label:"Darraa", fem:true,
                mainCols:["maroon","green","navy","sky"]}
   },
-  uniformLabel:{en:"National dress — colour, garment, and its embroidery",
-                ar:"الزيّ الوطني — اللون والقطعة ولون التطريز"},
+  uniformLabel:{en:"National dress",
+                ar:"الزيّ الوطني"},
   picker:{ main:   {en:"Dress colour",     ar:"لون الزي"},
            garment:{en:"Garment",          ar:"القطعة"},
            trim:   {en:"Embroidery colour",ar:"لون التطريز"} },
   talentLabel:{en:"What is your child doing in the celebration?",
                ar:"ماذا يفعل طفلكِ في الاحتفال؟"},
   talents:{
-    flag:   {en:"Carrying the flag 🎌", ar:"حمل العلم 🎌"},
+    flag:   {en:"Carrying the flag 🚩", ar:"حمل العلم 🚩"},
     singing:{en:"Singing the anthem 🎵", ar:"غناء النشيد 🎵"},
     dancing:{en:"The Ardha dance 🥁",    ar:"العرضة 🥁"},
     drawing:{en:"Painting the flag 🎨",  ar:"رسم العلم 🎨"},
@@ -684,8 +684,8 @@ nationalday: {
   },
   palette:"festive palette of Kuwaiti flag green, white, red and black against cream stone and bright Gulf sunlight",
   fun:{
-    en:["Hanging a thousand little flags… 🎌","Tuning the drums… 🪘","Filling the sweet baskets… 🍬","Ironing the dishdashas… 👳","Waking Mishmish for the party… 🐱","Practising the anthem… 🎵"],
-    ar:["نعلّق ألف علم صغير… 🎌","نضبط إيقاع الطبول… 🪘","نملأ سلال الحلوى… 🍬","نكوي الدشاديش… 👳","نوقظ مشمش للاحتفال… 🐱","نتمرّن على النشيد… 🎵"]
+    en:["Hanging a thousand little flags… 🚩","Tuning the drums… 🪘","Filling the sweet baskets… 🍬","Ironing the dishdashas… 👳","Waking Mishmish for the party… 🐱","Practising the anthem… 🎵"],
+    ar:["نعلّق ألف علم صغير… 🚩","نضبط إيقاع الطبول… 🪘","نملأ سلال الحلوى… 🍬","نكوي الدشاديش… 👳","نوقظ مشمش للاحتفال… 🐱","نتمرّن على النشيد… 🎵"]
   },
   story:[
 
@@ -793,8 +793,8 @@ ramadan: {
     trousers:{en:"trousers", ar:"بنطال",  label:"Trousers", fem:false},
     skirt:   {en:"skirt",    ar:"تنّورة", label:"Skirt",    fem:true }
   },
-  uniformLabel:{en:"School uniform — colours and bottom",
-                ar:"الزيّ المدرسي — الألوان والقطعة السفلية"},
+  uniformLabel:{en:"School uniform",
+                ar:"الزيّ المدرسي"},
   talentLabel:{en:"What does your child help with in Ramadan?",
                ar:"بماذا يساعد طفلكِ في رمضان؟"},
   talents:{
@@ -919,8 +919,8 @@ schooltrip: {
     trousers:{en:"trousers", ar:"بنطال",  arAcc:"بنطالًا",  label:"Trousers", fem:false},
     skirt:   {en:"skirt",    ar:"تنّورة", arAcc:"تنّورةً",  label:"Skirt",    fem:true }
   },
-  uniformLabel:{en:"School uniform — colours and bottom",
-                ar:"الزيّ المدرسي — الألوان والقطعة السفلية"},
+  uniformLabel:{en:"School uniform",
+                ar:"الزيّ المدرسي"},
   talentLabel:{en:"Where does your child go on the trip?",
                ar:"إلى أين يذهب طفلك في الرحلة؟"},
   talents:{
@@ -1045,8 +1045,8 @@ graduation: {
     trousers:{en:"trousers", ar:"بنطال",  arAcc:"بنطالًا",  label:"Trousers", fem:false},
     skirt:   {en:"skirt",    ar:"تنّورة", arAcc:"تنّورةً",  label:"Skirt",    fem:true }
   },
-  uniformLabel:{en:"Graduation gown — colour of the gown and its trim",
-                ar:"ثوب التخرج — لون الثوب ولون الحاشية"},
+  uniformLabel:{en:"Graduation gown",
+                ar:"ثوب التخرج"},
   hideGarment:true,
   picker:{ main:{en:"Gown colour", ar:"لون الثوب"},
            trim:{en:"Trim colour", ar:"لون الحاشية"} },
@@ -1476,7 +1476,9 @@ function buildSelects(){
   $("shirtLab").textContent   = (pk.main   || dp.main)[lg];
   $("garmentLab").textContent = (pk.garment|| dp.garment)[lg];
   $("bottomLab").textContent  = (pk.trim   || dp.trim)[lg];
-  /* some themes do not use the garment choice at all */
+  /* a dropdown with a single choice is just noise — hide it */
+  const scell = $("shirtSel").closest(".ucell");
+  if(scell) scell.style.display = (Object.keys(shirtCols).length < 2) ? "none" : "";
   const gcell = $("garmentCell");
   if(gcell) gcell.style.display = th.hideGarment ? "none" : "";
   $("garmentSel").innerHTML = opts(gl, S.garment);
