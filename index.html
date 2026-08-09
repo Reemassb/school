@@ -341,14 +341,22 @@ const BUILDING = "a modern Gulf school building with smooth pale cream stone cla
    Bump this whenever the file changes. It prints in the browser console
    and is readable at any time by typing  BUILD  in the console, so you can
    confirm which copy is actually live on GitHub Pages. */
-const BUILD = "school-2026-08-09-b";
+const BUILD = "school-2026-08-09-c";
 console.log("%cMy School Adventures · build " + BUILD, "font-weight:bold");
 window.BUILD = BUILD;
 
-const GIRGIAN_DRESS = "For Girgian the children have changed out of school uniform into traditional Kuwaiti dress: "+
-  "boys in a plain white dishdasha with a white ghutra headdress and black agal, girls in a colourful traditional "+
-  "darraa dress — deep red, green, purple or teal, with gold embroidery at the neckline and cuffs — and never a "+
-  "ghutra or agal, which are worn only by boys. The children are not all dressed in white. ";
+/* Traditional Kuwaiti dress for the background children, written once so every
+   scene matches. The girls' heads are described positively — saying only
+   "never a ghutra" leaves the model nothing to draw, and it copies the boys. */
+const KUWAITI_DRESS = "The children wear traditional Kuwaiti dress. Boys wear a plain white dishdasha "+
+  "with a white ghutra headdress and a black agal. Girls wear a colourful traditional darraa dress — deep red, "+
+  "green, purple or teal, with gold embroidery — and every girl's hair is bare and clearly visible, worn loose "+
+  "or tied back, sometimes with a small ribbon or hair clip. No girl wears a ghutra, an agal, a headscarf or any "+
+  "head covering whatsoever — the ghutra and agal are worn by boys only, never by a girl. The children are not "+
+  "all dressed in white. ";
+
+const GIRGIAN_DRESS = "For Girgian the children have changed out of school uniform into traditional Kuwaiti dress. "
+  + KUWAITI_DRESS;
 
 const UCOL = {
   white:  {en:"white",         m:"أبيض",        f:"بيضاء",        ma:"أبيض",         fa:"بيضاء",        hex:"#EFEFEF", dark:true },
@@ -700,7 +708,7 @@ nationalday: {
   story:[
 
   /* 0 — cover */
-  { prompt:"The character stands in traditional Kuwaiti national dress in a school courtyard, holding a small Kuwaiti flag and smiling proudly at the viewer; Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. Kuwaiti flag bunting in green, white, red and black strung overhead; "+BUILDING+"; bright Gulf sunlight.",
+  { prompt:"The character stands in traditional Kuwaiti national dress in a school courtyard, holding a small Kuwaiti flag and smiling proudly at the viewer; "+KUWAITI_DRESS+"Kuwaiti flag bunting in green, white, red and black strung overhead; "+BUILDING+"; bright Gulf sunlight.",
     en:(n,u)=>({title:`National Day`, text:`National Day with ${n} at ${u.school||"school"}.`}),
     ar:(n,g,u)=>({title:`العيد الوطني`, text:`العيد الوطني مع ${n} في ${u.school||"المدرسة"}`}) },
 
@@ -712,7 +720,7 @@ nationalday: {
      : ({text:`لا زي مدرسي اليوم! لبست ${n} دراعتها الجميلة، ووقفت أمام المرآة تنظر إلى نفسها بفخر. اليوم تحتفل المدرسة بالعيد الوطني!`}) },
 
   /* 2 — the transformed courtyard */
-  { prompt:"A school courtyard transformed for Kuwait National Day: Kuwaiti flags flying high, flags decorating the walls, children in traditional Kuwaiti dress holding small flags. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. the character walks in looking around in amazement; bright morning sunlight.",
+  { prompt:"A school courtyard transformed for Kuwait National Day: Kuwaiti flags flying high, flags decorating the walls, children in traditional Kuwaiti dress holding small flags. "+KUWAITI_DRESS+"the character walks in looking around in amazement; bright morning sunlight.",
     en:(n,u)=>({text:`The whole school courtyard had changed overnight! Kuwaiti flags flying high, flags decorating the walls, and little flags in the children's hands. ${n} looked around in amazement — the school had never looked like this before!`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`تغيرت ساحة المدرسة كلها بين ليلة وضحاها! أعلام الكويت ترفرف في الأعلى، وأعلام تزين الجدران، وأعلام صغيرة في أيدي الأطفال. نظر ${n} حوله بدهشة. لم ير المدرسة بهذا الشكل من قبل!`})
@@ -726,7 +734,7 @@ nationalday: {
      : ({text:`حتى مشمش كان مستعدًا للاحتفال! ربط أحدهم شريطًا صغيرًا بألوان علم الكويت حول رقبته. نظر مشمش إلى الشريط باستغراب، وحاول أن يراه من كل جهة! ضحكت ${n} وهي تراقبه.`}) },
 
   /* 4 — the anthem */
-  { prompt:"Rows of young children in traditional Kuwaiti dress stand respectfully still and straight in a school courtyard, singing together. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. a Kuwaiti flag is being raised high on a pole in front of them; the character stands among classmates, chin up, singing with pride; bright morning sunlight.",
+  { prompt:"Rows of young children in traditional Kuwaiti dress stand respectfully still and straight in a school courtyard, singing together. "+KUWAITI_DRESS+"a Kuwaiti flag is being raised high on a pole in front of them; the character stands among classmates, chin up, singing with pride; bright morning sunlight.",
     en:(n,u)=>({text:`Then everyone stood in respect. The flag of Kuwait rose high, and everyone sang the national anthem together. ${n} stood with the class and sang every word with pride.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`ثم وقف الجميع احترامًا. ارتفع علم الكويت عاليًا، وردد الجميع النشيد الوطني معًا. وقف ${n} مع زملائه، وردد كلمات النشيد بكل فخر.`})
@@ -735,19 +743,19 @@ nationalday: {
   /* 5 — the celebration (parent picks) */
   { talents:{
       flag:{
-        prompt:"The character walks at the front of a school parade in traditional Kuwaiti dress, holding a large Kuwaiti flag high with both hands, proud and careful; classmates in traditional dress follow behind clapping. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. festive bunting overhead; bright sunlight.",
+        prompt:"The character walks at the front of a school parade in traditional Kuwaiti dress, holding a large Kuwaiti flag high with both hands, proud and careful; classmates in traditional dress follow behind clapping. "+KUWAITI_DRESS+"festive bunting overhead; bright sunlight.",
         en:(n,u)=>({text:`The parade began, and ${n} was chosen to carry the flag of Kuwait at the front. ${u.He} carried it with pride and walked with the class amid the clapping.`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`بدأ العرض، واختير ${n} ليحمل علم الكويت في المقدمة. حمله بفخر وسار مع زملائه وسط التصفيق.`})
          : ({text:`بدأ العرض، واختيرت ${n} لتحمل علم الكويت في المقدمة. حملته بفخر وسارت مع زميلاتها وسط التصفيق.`}) },
       singing:{
-        prompt:"The character stands with classmates in traditional Kuwaiti dress in a school courtyard, all singing the anthem together with pride and energy. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. teachers watch and smile; festive decorations behind; bright daylight.",
+        prompt:"The character stands with classmates in traditional Kuwaiti dress in a school courtyard, all singing the anthem together with pride and energy. "+KUWAITI_DRESS+"teachers watch and smile; festive decorations behind; bright daylight.",
         en:(n,u)=>({text:`It was time to celebrate. ${n} stood with the class and sang the national anthem with pride and excitement. Everybody clapped!`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`حان وقت الاحتفال. وقف ${n} مع زملائه وردد النشيد الوطني بكل فخر وحماس. صفق الجميع!`})
          : ({text:`حان وقت الاحتفال. وقفت ${n} مع زميلاتها ورددت النشيد الوطني بكل فخر وحماس. صفق الجميع!`}) },
       dancing:{
-        prompt:"The character performs a traditional Kuwaiti Ardha dance in a school courtyard, in traditional dress, standing among the other dancers moving to the rhythm with confidence, one arm raised holding a small blunt wooden toy sword — a child's prop, clearly wooden, rounded and harmless, never a real or sharp blade; child drummers keep the beat at the side. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. festive bunting overhead; bright sunlight.",
+        prompt:"The character performs a traditional Kuwaiti Ardha dance in a school courtyard, in traditional dress, standing among the other dancers moving to the rhythm with confidence, one arm raised holding a small blunt wooden toy sword — a child's prop, clearly wooden, rounded and harmless, never a real or sharp blade; child drummers keep the beat at the side. "+KUWAITI_DRESS+"festive bunting overhead; bright sunlight.",
         en:(n,u)=>({text:`The Ardha began! ${n} stood with the performers and moved with them to the beat of the drums, full of confidence. Everybody clapped!`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`بدأت العرضة! وقف ${n} مع المشاركين، وتحرك معهم على إيقاع الطبول بحماس وثقة. صفق الجميع!`})
@@ -759,13 +767,13 @@ nationalday: {
          ? ({text:`رسم ${n} علم الكويت بألوانه الأربعة: الأخضر والأبيض والأحمر والأسود. وعلقت المعلمة رسمته ليراها الجميع.`})
          : ({text:`رسمت ${n} علم الكويت بألوانه الأربعة: الأخضر والأبيض والأحمر والأسود. وعلقت المعلمة رسمتها ليراها الجميع.`}) },
       sweets:{
-        prompt:"The character carries a woven basket of colourful sweets around a decorated school courtyard, offering them to smiling classmates with a warm smile. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. Festive bunting overhead; bright sunlight.",
+        prompt:"The character carries a woven basket of colourful sweets around a decorated school courtyard, offering them to smiling classmates with a warm smile. "+KUWAITI_DRESS+"Festive bunting overhead; bright sunlight.",
         en:(n,u)=>({text:`${n} carried the sweet basket and went around among friends, handing them out with a smile — and made sure the sweets reached absolutely everyone!`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`حمل ${n} سلة الحلوى، ودار بها بين أصدقائه يوزعها بابتسامة. حرص على أن تصل الحلوى إلى الجميع!`})
          : ({text:`حملت ${n} سلة الحلوى، ودارت بها بين صديقاتها توزعها بابتسامة. حرصت على أن تصل الحلوى إلى الجميع!`}) },
       drum:{
-        prompt:"The character plays a traditional Arabic hand drum in a school courtyard celebration, in traditional Kuwaiti dress, drumming with energy; children around clap along in time. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. festive bunting overhead; bright sunlight.",
+        prompt:"The character plays a traditional Arabic hand drum in a school courtyard celebration, in traditional Kuwaiti dress, drumming with energy; children around clap along in time. "+KUWAITI_DRESS+"festive bunting overhead; bright sunlight.",
         en:(n,u)=>({text:`${n} took the drum and began to play: "Boom… boom… boom!" And soon everybody was clapping along with the rhythm!`}),
         ar:(n,g,u)=> g==="boy"
          ? ({text:`أمسك ${n} بالطبل وبدأ يعزف: «دم… دم… دم!» وسرعان ما صار الجميع يصفقون مع الإيقاع!`})
@@ -773,14 +781,14 @@ nationalday: {
     } },
 
   /* 6 — sweets, music, celebration */
-  { prompt:"A joyful school courtyard celebration: children in traditional Kuwaiti dress laughing, waving small Kuwaiti flags, music and sweets. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. the character is in the middle of it all, laughing with friends; Kuwaiti flag bunting in green, white, red and black strung overhead; bright sunlight.",
+  { prompt:"A joyful school courtyard celebration: children in traditional Kuwaiti dress laughing, waving small Kuwaiti flags, music and sweets. "+KUWAITI_DRESS+"the character is in the middle of it all, laughing with friends; Kuwaiti flag bunting in green, white, red and black strung overhead; bright sunlight.",
     en:(n,u)=>({text:`Then came the sweets, and the music, and the celebration, with little flags waving everywhere. ${n} laughed and had such fun with friends that the time simply flew.`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`جاء وقت الحلوى والموسيقى والاحتفال، والأعلام الصغيرة ترفرف في كل مكان. ضحك ${n} واستمتع مع أصدقائه، حتى إنه لم يشعر بمرور الوقت.`})
      : ({text:`جاء وقت الحلوى والموسيقى والاحتفال، والأعلام الصغيرة ترفرف في كل مكان. ضحكت ${n} واستمتعت مع صديقاتها، حتى إنها لم تشعر بمرور الوقت.`}) },
 
   /* 7 — the class photo, with Mishmish */
-  { prompt:"A whole class of young children in traditional Kuwaiti dress squeeze together for a group photograph in a decorated school courtyard, holding small Kuwaiti flags up, everyone smiling. Boys wear a plain white dishdasha with a white ghutra headdress and black agal. Girls wear a colourful traditional darraa dress — deep red, green, purple or teal, with gold embroidery — and never a ghutra or agal, which are worn only by boys. The children are not all dressed in white. the character is near the front; a small apricot-orange cat sits at the edge of the group, included in the photo; bright sunlight.",
+  { prompt:"A whole class of young children in traditional Kuwaiti dress squeeze together for a group photograph in a decorated school courtyard, holding small Kuwaiti flags up, everyone smiling. "+KUWAITI_DRESS+"the character is near the front; a small apricot-orange cat sits at the edge of the group, included in the photo; bright sunlight.",
     en:(n,u)=>({text:`At the end of the celebration, the children of the class gathered for a group photo. Flags raised, smiles filling every face… and even Mishmish appeared in the picture! What a lovely memory!`}),
     ar:(n,g,u)=>({text:`وفي نهاية الاحتفال، اجتمع أطفال الصف لالتقاط صورة جماعية. الأعلام مرفوعة، والابتسامات تملأ الوجوه… وحتى مشمش ظهر في الصورة! يا لها من ذكرى جميلة!`}) },
 
