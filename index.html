@@ -337,6 +337,14 @@ const BUILDING = "a modern Gulf school building with smooth pale cream stone cla
   "entrance outlined in warm gold, flat roofline with no tiles, tall date palms and "+
   "bright dry Gulf sunlight";
 
+/* ==================== BUILD STAMP ====================
+   Bump this whenever the file changes. It prints in the browser console
+   and is readable at any time by typing  BUILD  in the console, so you can
+   confirm which copy is actually live on GitHub Pages. */
+const BUILD = "school-2026-08-09-b";
+console.log("%cMy School Adventures · build " + BUILD, "font-weight:bold");
+window.BUILD = BUILD;
+
 const GIRGIAN_DRESS = "For Girgian the children have changed out of school uniform into traditional Kuwaiti dress: "+
   "boys in a plain white dishdasha with a white ghutra headdress and black agal, girls in a colourful traditional "+
   "darraa dress — deep red, green, purple or teal, with gold embroidery at the neckline and cuffs — and never a "+
@@ -653,12 +661,15 @@ nationalday: {
        ar:"الأعلام، والزي التراثي، واحتفال المدرسة"},
   garments:{
     dishdasha:{en:"a traditional Kuwaiti dishdasha",
-               ar:"دشداشة", label:"Dishdasha", fem:true,
-               mainCols:["white"]},
+               ar:"دشداشة", label:"Dishdasha", fem:true},
     darraa:   {en:"a traditional Kuwaiti darraa dress",
-               ar:"دراعة", label:"Darraa", fem:true,
-               mainCols:["maroon","green","navy","sky"]}
+               ar:"دراعة", label:"Darraa", fem:true}
   },
+  /* National dress follows the child's gender, so there is nothing to pick:
+     boys wear a white dishdasha, girls a colourful darraa. The whole uniform
+     row is hidden and the corner badge is pinned to Kuwait flag green. */
+  hideUniform:true,
+  badgeCol:"green",
   uniformLabel:{en:"National dress",
                 ar:"الزيّ الوطني"},
   picker:{ main:   {en:"Dress colour",     ar:"لون الزي"},
@@ -674,14 +685,13 @@ nationalday: {
     sweets: {en:"Handing out sweets 🍬", ar:"توزيع الحلوى 🍬"},
     drum:   {en:"Playing the drum 🪘",   ar:"العزف على الطبل 🪘"}
   },
-  outfit:(u)=>{
-    const darraa = /darraa/.test(u.garEn);
-    return `Dress the character in ${u.garEn} in a single solid ${u.shirtEn}, with fine ${u.bottomEn} and gold embroidery at the neckline and cuffs only. `
-      + (darraa
-          ? "The darraa is a loose flowing Kuwaiti Gulf dress: the embroidery stays at the neckline and the cuffs, and there is NEVER a long vertical embroidered panel running down the centre of the chest, never geometric cross-stitch tatreez, and it must not resemble a Palestinian thobe. No ghutra and no agal — those are worn only by boys. "
-          : "With a crisp white ghutra headdress and a black agal. ")
-      + `Traditional Kuwaiti national dress, neat and festive. The hair and full face must stay clearly visible.`;
-  },
+  outfit:(u)=> u.boyGirl==="girl"
+    ? "Dress the character in a traditional Kuwaiti darraa dress in a single rich festive colour — deep red, green, purple or teal — with fine gold embroidery at the neckline and cuffs only. "
+      + "The darraa is a loose flowing Kuwaiti Gulf dress: the embroidery stays at the neckline and the cuffs, and there is NEVER a long vertical embroidered panel running down the centre of the chest, never geometric cross-stitch tatreez, and it must not resemble a Palestinian thobe. "
+      + "The darraa must not be white. No ghutra and no agal — those are worn only by boys. "
+      + "Traditional Kuwaiti national dress, neat and festive. The hair and full face must stay clearly visible."
+    : "Dress the character in a plain white traditional Kuwaiti dishdasha, clean and neatly pressed, with a crisp white ghutra headdress and a black agal. "
+      + "Traditional Kuwaiti national dress, neat and festive. The full face must stay clearly visible under the ghutra.",
   palette:"festive palette of Kuwaiti flag green, white, red and black against cream stone and bright Gulf sunlight",
   fun:{
     en:["Hanging a thousand little flags… 🚩","Tuning the drums… 🪘","Filling the sweet baskets… 🍬","Ironing the dishdashas… 👳","Waking Mishmish for the party… 🐱","Practising the anthem… 🎵"],
@@ -696,7 +706,7 @@ nationalday: {
 
   /* 1 — dressed with pride */
   { prompt:"The character stands in front of a bedroom mirror wearing traditional Kuwaiti national dress, looking at their own reflection with pride, standing tall; morning light; a small Kuwaiti flag on the bed and a schoolbag by the door.",
-    en:(n,u)=>({text:`No school uniform today! ${n} put on ${/darraa/.test(u.garEn) ? "a beautiful darraa" : "a white dishdasha"} and stood in front of the mirror, looking with pride. Today the school is celebrating National Day!`}),
+    en:(n,u)=>({text:`No school uniform today! ${n} put on ${u.boyGirl==="girl" ? "a beautiful darraa" : "a white dishdasha"} and stood in front of the mirror, looking with pride. Today the school is celebrating National Day!`}),
     ar:(n,g,u)=> g==="boy"
      ? ({text:`لا زي مدرسي اليوم! لبس ${n} دشداشته البيضاء، ووقف أمام المرآة ينظر إلى نفسه بفخر. اليوم تحتفل المدرسة بالعيد الوطني!`})
      : ({text:`لا زي مدرسي اليوم! لبست ${n} دراعتها الجميلة، ووقفت أمام المرآة تنظر إلى نفسها بفخر. اليوم تحتفل المدرسة بالعيد الوطني!`}) },
@@ -1479,6 +1489,9 @@ function buildSelects(){
   /* a dropdown with a single choice is just noise — hide it */
   const scell = $("shirtSel").closest(".ucell");
   if(scell) scell.style.display = (Object.keys(shirtCols).length < 2) ? "none" : "";
+  /* some themes decide the whole outfit themselves — hide the row entirely */
+  const urow = document.querySelector(".urow");
+  if(urow) urow.style.display = th.hideUniform ? "none" : "";
   const gcell = $("garmentCell");
   if(gcell) gcell.style.display = th.hideGarment ? "none" : "";
   $("garmentSel").innerHTML = opts(gl, S.garment);
@@ -1488,7 +1501,8 @@ function buildSelects(){
   // the labels above the pickers change per story too
   const lab=$("talentLabelEl");
   if(lab){ lab.textContent = hasTalents ? th.talentLabel[S.lang] : ""; lab.style.display = hasTalents ? "" : "none"; }
-  const ulab=$("uniformLabelEl"); if(ulab) ulab.textContent = th.uniformLabel[S.lang];
+  const ulab=$("uniformLabelEl");
+  if(ulab){ ulab.textContent = th.uniformLabel[S.lang]; ulab.style.display = th.hideUniform ? "none" : ""; }
 }
 ["schoolName","schoolInit"].forEach(id=>$(id).addEventListener("input",validateSetup));
 ["shirtSel","bottomSel","garmentSel","talentSel"].forEach(id=>$(id).addEventListener("change",validateSetup));
@@ -1726,7 +1740,8 @@ function drawBadge(x,ix,iy,dispFont){
   const cx=ix+66, cy=iy+66, r=52;
   x.save();
   x.beginPath(); x.arc(cx,cy,r,0,7);
-  const col=UCOL[S.bottom]||UCOL.navy;
+  const th=THEMES[S.theme]||{};
+  const col=UCOL[th.badgeCol]||UCOL[S.bottom]||UCOL.navy;
   x.fillStyle=col.hex; x.fill();
   x.lineWidth=7; x.strokeStyle="#fff"; x.stroke();
   x.fillStyle=col.dark?"#3B2A4A":"#fff";
